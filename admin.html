@@ -5,20 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Admin Panel | Makuri Fellowship Church</title>
   <link rel="icon" href="MAKURI.cHURCH.jpeg" type="image/x-icon">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
-      --primary: #ff8c00;
-      --primary-light: #ffb347;
-      --background: #fffaf5;
-      --text-dark: #3c2412;
-      --text-light: #6b4f36;
+      --primary: #4a6de5;
+      --primary-light: #6b8cff;
+      --primary-dark: #2c4bc9;
+      --secondary: #f85a5a;
+      --secondary-light: #ff7b7b;
+      --accent: #4cd3c2;
+      --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --card-bg: rgba(255, 255, 255, 0.95);
+      --text-dark: #333;
+      --text-light: #666;
       --white: #ffffff;
-      --shadow: rgba(0, 0, 0, 0.15);
-      --error: #d32f2f;
+      --shadow: rgba(0, 0, 0, 0.2);
       --success: #388e3c;
-      --transition: all 0.3s ease;
-      --border-radius: 12px;
-      --button-radius: 8px;
+      --error: #d32f2f;
+      --warning: #f57c00;
+      --info: #0288d1;
+      --transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      --border-radius: 16px;
+      --button-radius: 10px;
     }
 
     * {
@@ -35,133 +46,192 @@
       display: flex;
       flex-direction: column;
       font-size: 16px;
+      position: relative;
+    }
+
+    /* Animated background shapes */
+    .bg-shape {
+      position: fixed;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      animation: float 15s infinite ease-in-out;
+      z-index: -1;
+    }
+    
+    .shape-1 {
+      width: 200px;
+      height: 200px;
+      top: 10%;
+      left: 10%;
+      animation-delay: 0s;
+    }
+    
+    .shape-2 {
+      width: 150px;
+      height: 150px;
+      bottom: 10%;
+      right: 10%;
+      animation-delay: 2s;
+    }
+    
+    .shape-3 {
+      width: 100px;
+      height: 100px;
+      top: 50%;
+      left: 5%;
+      animation-delay: 4s;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(10deg); }
     }
 
     .container {
-      max-width: 900px;
+      max-width: 1200px;
       margin: 2rem auto;
       padding: 0 1rem;
+      position: relative;
+      z-index: 1;
     }
 
     /* Navbar */
     header {
-      background: var(--text-dark);
-      color: var(--white);
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
       padding: 1rem;
       position: sticky;
       top: 0;
       z-index: 1000;
-      box-shadow: 0 2px 10px var(--shadow);
+      box-shadow: 0 4px 20px var(--shadow);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     }
 
     .navbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      max-width: 900px;
+      max-width: 1200px;
       margin: 0 auto;
     }
 
     .navbar h1 {
-      font-size: 1.6rem;
+      font-size: 1.8rem;
       font-weight: 700;
       letter-spacing: 1px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 12px;
+      color: var(--primary-dark);
     }
 
-    .navbar h1::before {
-      content: "🕊️";
+    .navbar h1 i {
+      color: var(--primary);
     }
 
     .nav-links {
       display: flex;
       list-style: none;
-      gap: 16px;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
     .nav-links a {
-      color: var(--white);
+      color: var(--text-dark);
       text-decoration: none;
       font-weight: 500;
-      padding: 8px 12px;
+      padding: 10px 16px;
       border-radius: var(--button-radius);
       transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .nav-links a:hover {
       background: var(--primary-light);
-      color: var(--text-dark);
+      color: white;
     }
 
     .nav-links a.active {
       background: var(--primary);
+      color: white;
     }
 
     .mobile-menu-toggle {
       display: none;
       background: none;
       border: none;
-      color: var(--white);
+      color: var(--primary-dark);
       font-size: 1.8rem;
       cursor: pointer;
     }
 
     /* Admin Container */
     .admin-container {
-      background: var(--white);
-      padding: 2rem;
+      background: var(--card-bg);
+      padding: 2.5rem;
       border-radius: var(--border-radius);
-      box-shadow: 0 4px 15px var(--shadow);
-      animation: fadeIn 0.5s ease-in;
+      box-shadow: 0 15px 35px var(--shadow);
+      animation: fadeIn 0.7s ease-in;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      margin-bottom: 2rem;
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
+      from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
     h2 {
       text-align: center;
-      margin-bottom: 1.5rem;
-      color: var(--text-dark);
-      font-size: 1.6rem;
-      font-weight: 600;
+      margin-bottom: 2rem;
+      color: var(--primary-dark);
+      font-size: 1.8rem;
+      font-weight: 700;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 10px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--primary-light);
     }
 
     form {
-      margin-bottom: 2rem;
-      padding-bottom: 1.5rem;
-      border-bottom: 2px solid var(--primary-light);
+      margin-bottom: 2.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    form:last-child {
+      border-bottom: none;
     }
 
     label {
       font-weight: 600;
       display: block;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       color: var(--text-dark);
       font-size: 0.95rem;
     }
 
-    input, textarea {
+    input, textarea, select {
       width: 100%;
-      padding: 12px;
-      margin-bottom: 1rem;
+      padding: 14px;
+      margin-bottom: 1.2rem;
       border-radius: var(--button-radius);
-      border: 1px solid #ccc;
+      border: 2px solid #e1e5f2;
       outline: none;
       font-size: 0.95rem;
       transition: var(--transition);
+      background: rgba(255, 255, 255, 0.8);
     }
 
-    input:focus, textarea:focus {
+    input:focus, textarea:focus, select:focus {
       border-color: var(--primary);
-      box-shadow: 0 0 8px rgba(255, 179, 71, 0.3);
+      box-shadow: 0 0 0 3px rgba(74, 109, 229, 0.2);
+      background: white;
     }
 
     textarea {
@@ -169,50 +239,85 @@
       min-height: 120px;
     }
 
+    .form-row {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .form-row > div {
+      flex: 1;
+    }
+
     button {
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
       color: var(--white);
       border: none;
-      padding: 12px 24px;
+      padding: 14px 28px;
       border-radius: var(--button-radius);
-      font-size: 0.95rem;
+      font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
       transition: var(--transition);
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    button:before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, var(--primary-light), var(--primary));
+      z-index: -1;
+      transition: var(--transition);
+      opacity: 0;
     }
 
     button:hover {
-      background: linear-gradient(135deg, var(--primary-light), var(--primary));
-      transform: scale(1.05);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(74, 109, 229, 0.3);
+    }
+
+    button:hover:before {
+      opacity: 1;
     }
 
     .logout-btn {
-      background: linear-gradient(135deg, crimson, rgb(255, 86, 86));
-      margin: 1rem auto;
-      display: block;
-      justify-content: center;
+      background: linear-gradient(135deg, var(--secondary), var(--secondary-light));
+      margin: 2rem auto;
+      display: flex;
+      max-width: 200px;
     }
 
     .logout-btn:hover {
-      background: linear-gradient(135deg, rgb(255, 86, 86), crimson);
+      background: linear-gradient(135deg, var(--secondary-light), var(--secondary));
     }
 
     .upload-preview {
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: var(--button-radius);
+      border: 1px dashed #ccc;
     }
 
     .upload-preview img, .upload-preview video {
-      width: 80px;
-      height: 80px;
+      width: 100px;
+      height: 100px;
       border-radius: var(--button-radius);
       object-fit: cover;
-      box-shadow: 0 2px 5px var(--shadow);
+      box-shadow: 0 4px 10px var(--shadow);
     }
 
     .error-message {
@@ -220,6 +325,9 @@
       font-size: 0.9rem;
       margin-top: 8px;
       text-align: center;
+      padding: 10px;
+      border-radius: var(--button-radius);
+      background: rgba(211, 47, 47, 0.1);
     }
 
     .success-message {
@@ -227,28 +335,34 @@
       font-size: 0.9rem;
       margin-top: 8px;
       text-align: center;
+      padding: 10px;
+      border-radius: var(--button-radius);
+      background: rgba(56, 142, 60, 0.1);
     }
 
     .toast {
       position: fixed;
-      top: 16px;
-      right: 16px;
-      padding: 12px 20px;
+      top: 20px;
+      right: 20px;
+      padding: 16px 24px;
       border-radius: var(--button-radius);
       color: var(--white);
       font-weight: 600;
-      font-size: 0.95rem;
+      font-size: 1rem;
       z-index: 1000;
       animation: slideIn 0.3s ease, slideOut 0.3s ease 2.7s forwards;
       display: flex;
       align-items: center;
-      gap: 8px;
-      min-width: 250px;
-      box-shadow: 0 4px 12px var(--shadow);
+      gap: 10px;
+      min-width: 280px;
+      box-shadow: 0 8px 20px var(--shadow);
+      backdrop-filter: blur(10px);
     }
 
     .toast.success { background: var(--success); }
     .toast.error { background: var(--error); }
+    .toast.warning { background: var(--warning); }
+    .toast.info { background: var(--info); }
 
     @keyframes slideIn {
       from { transform: translateX(100%); opacity: 0; }
@@ -263,16 +377,221 @@
     /* Footer */
     footer {
       margin-top: auto;
-      padding: 1.5rem;
-      background: var(--text-dark);
+      padding: 2rem;
+      background: rgba(0, 0, 0, 0.7);
       color: var(--white);
       text-align: center;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
+      position: relative;
+      z-index: 1;
     }
 
     footer::after {
       content: " ✝️ Guided by Grace";
       color: var(--primary-light);
+      font-weight: 600;
+    }
+
+    /* Loading Spinner */
+    .spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Dashboard Cards */
+    .dashboard-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .card {
+      background: white;
+      border-radius: var(--border-radius);
+      padding: 1.5rem;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transition: var(--transition);
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: var(--primary);
+    }
+
+    .card-title {
+      font-size: 1rem;
+      color: var(--text-light);
+      margin-bottom: 0.5rem;
+    }
+
+    .card-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+    }
+
+    /* Data Table */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1.5rem;
+      background: white;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .data-table th, .data-table td {
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .data-table th {
+      background: var(--primary-light);
+      color: white;
+      font-weight: 600;
+    }
+
+    .data-table tr:hover {
+      background: rgba(74, 109, 229, 0.05);
+    }
+
+    .data-table .action-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-small {
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      border-radius: 6px;
+    }
+
+    .btn-edit {
+      background: var(--accent);
+    }
+
+    .btn-delete {
+      background: var(--secondary);
+    }
+
+    .btn-view {
+      background: var(--primary);
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid var(--primary-light);
+      margin-bottom: 2rem;
+      overflow-x: auto;
+    }
+
+    .tab {
+      padding: 12px 20px;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--text-light);
+      border-bottom: 3px solid transparent;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+
+    .tab:hover {
+      color: var(--primary);
+    }
+
+    .tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: var(--border-radius);
+      width: 90%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-light);
+    }
+
+    .modal-close:hover {
+      color: var(--secondary);
+    }
+
+    /* Chart Container */
+    .chart-container {
+      background: white;
+      border-radius: var(--border-radius);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      height: 300px;
+      position: relative;
+    }
+
+    /* Attendance Form */
+    .attendance-form {
+      background: white;
+      border-radius: var(--border-radius);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
     }
 
     /* Responsive Design */
@@ -280,13 +599,15 @@
       .navbar .nav-links {
         display: none;
         position: absolute;
-        top: 60px;
+        top: 70px;
         left: 0;
         width: 100%;
-        background: var(--text-dark);
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
         flex-direction: column;
         padding: 1rem;
-        box-shadow: 0 4px 12px var(--shadow);
+        box-shadow: 0 8px 20px var(--shadow);
+        border-radius: 0 0 var(--border-radius) var(--border-radius);
       }
 
       .navbar .nav-links.active {
@@ -298,21 +619,43 @@
       }
 
       .admin-container {
-        padding: 1.5rem;
+        padding: 1.8rem;
       }
 
       .container {
-        padding: 0 12px;
+        padding: 0 15px;
+      }
+
+      .form-row {
+        flex-direction: column;
+        gap: 0;
+      }
+
+      .dashboard-cards {
+        grid-template-columns: 1fr;
+      }
+
+      .data-table {
+        font-size: 0.9rem;
+      }
+
+      .data-table th, .data-table td {
+        padding: 10px;
+      }
+
+      .action-buttons {
+        flex-direction: column;
       }
     }
 
     @media (max-width: 480px) {
       body { font-size: 15px; }
-      .navbar h1 { font-size: 1.4rem; }
-      h2 { font-size: 1.4rem; }
-      button { padding: 10px 16px; font-size: 0.9rem; }
-      .upload-preview img, .upload-preview video { width: 60px; height: 60px; }
-      .toast { right: 12px; left: 12px; min-width: auto; }
+      .navbar h1 { font-size: 1.5rem; }
+      h2 { font-size: 1.5rem; }
+      button { padding: 12px 20px; font-size: 0.9rem; }
+      .upload-preview img, .upload-preview video { width: 70px; height: 70px; }
+      .toast { right: 15px; left: 15px; min-width: auto; }
+      .modal-content { padding: 1.5rem; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -321,74 +664,665 @@
   </style>
 </head>
 <body>
+  <!-- Animated background shapes -->
+  <div class="bg-shape shape-1"></div>
+  <div class="bg-shape shape-2"></div>
+  <div class="bg-shape shape-3"></div>
+  
   <header>
     <div class="navbar">
-      <h1>Makuri Fellowship Church</h1>
-      <button class="mobile-menu-toggle" id="mobile-menu-toggle">☰</button>
+      <h1><i class="fas fa-dove"></i> Makuri Fellowship Church</h1>
+      <button class="mobile-menu-toggle" id="mobile-menu-toggle"><i class="fas fa-bars"></i></button>
       <ul class="nav-links">
-        <li><a href="#" class="active">Dashboard</a></li>
-        <li><a href="#">Sermons</a></li>
-        <li><a href="#">Fellowships</a></li>
-        <li><a href="#">Events</a></li>
-        <li><a href="#">Media</a></li>
+        <li><a href="#" class="active" data-tab="dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="#" data-tab="sermons"><i class="fas fa-book"></i> Sermons</a></li>
+        <li><a href="#" data-tab="fellowships"><i class="fas fa-users"></i> Fellowships</a></li>
+        <li><a href="#" data-tab="events"><i class="fas fa-calendar-alt"></i> Events</a></li>
+        <li><a href="#" data-tab="media"><i class="fas fa-photo-video"></i> Media</a></li>
+        <li><a href="#" data-tab="attendance"><i class="fas fa-chart-bar"></i> Attendance</a></li>
+        <li><a href="#" data-tab="youth"><i class="fas fa-child"></i> Youth</a></li>
+        <li><a href="#" data-tab="elders"><i class="fas fa-user-tie"></i> Elders</a></li>
+        <li><a href="#" data-tab="songs"><i class="fas fa-music"></i> Songs</a></li>
       </ul>
     </div>
   </header>
 
   <div class="container">
     <section class="admin-container">
-      <h2>📖 Post a New Sermon</h2>
-      <form id="sermonForm">
-        <label>Title</label>
-        <input type="text" id="sermonTitle" placeholder="Enter sermon title" required>
-        <label>Description</label>
-        <textarea id="sermonDesc" placeholder="Write a short sermon summary..." required></textarea>
-        <label>Video/Audio Link (Optional)</label>
-        <input type="url" id="sermonMedia" placeholder="YouTube or audio link">
-        <button type="button" onclick="postSermon()">Post Sermon <span>📖</span></button>
-      </form>
+      <!-- Dashboard Tab -->
+      <div id="dashboard" class="tab-content active">
+        <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+        
+        <div class="dashboard-cards">
+          <div class="card">
+            <div class="card-icon"><i class="fas fa-book"></i></div>
+            <div class="card-title">Total Sermons</div>
+            <div class="card-value" id="sermonCount">0</div>
+          </div>
+          
+          <div class="card">
+            <div class="card-icon"><i class="fas fa-users"></i></div>
+            <div class="card-title">Fellowships</div>
+            <div class="card-value" id="fellowshipCount">0</div>
+          </div>
+          
+          <div class="card">
+            <div class="card-icon"><i class="fas fa-calendar-alt"></i></div>
+            <div class="card-title">Upcoming Events</div>
+            <div class="card-value" id="eventCount">0</div>
+          </div>
+          
+          <div class="card">
+            <div class="card-icon"><i class="fas fa-photo-video"></i></div>
+            <div class="card-title">Media Files</div>
+            <div class="card-value" id="mediaCount">0</div>
+          </div>
+          
+          <div class="card">
+            <div class="card-icon"><i class="fas fa-child"></i></div>
+            <div class="card-title">Youth Members</div>
+            <div class="card-value" id="youthCount">0</div>
+          </div>
+          
+          <div class="card">
+            <div class="card-icon"><i class="fas fa-user-tie"></i></div>
+            <div class="card-title">Church Elders</div>
+            <div class="card-value" id="eldersCount">0</div>
+          </div>
+          
+          <div class="card">
+            <div class="card-icon"><i class="fas fa-music"></i></div>
+            <div class="card-title">Songs</div>
+            <div class="card-value" id="songsCount">0</div>
+          </div>
+          
+          <div class="card">
+            <div class="card-icon"><i class="fas fa-chart-bar"></i></div>
+            <div class="card-title">Avg. Sunday Attendance</div>
+            <div class="card-value" id="avgAttendance">0</div>
+          </div>
+        </div>
+        
+        <div class="chart-container">
+          <canvas id="attendanceChart"></canvas>
+        </div>
+        
+        <h3 style="margin-bottom: 1rem; color: var(--primary-dark);">Recent Activities</h3>
+        <div id="recentActivities">
+          <p style="text-align: center; color: var(--text-light);">No recent activities</p>
+        </div>
+      </div>
 
-      <h2>🙌 Add Fellowship Details</h2>
-      <form id="fellowshipForm">
-        <label>Fellowship Name</label>
-        <input type="text" id="fellowshipName" placeholder="e.g. Youth Fellowship" required>
-        <label>Location</label>
-        <input type="text" id="fellowshipLocation" placeholder="e.g. Church Hall" required>
-        <label>Day & Time</label>
-        <input type="text" id="fellowshipTime" placeholder="e.g. Wednesday 5PM" required>
-        <label>Leader / Contact Person</label>
-        <input type="text" id="fellowshipLeader" placeholder="e.g. John Mwenda - 0712345678" required>
-        <label>Short Description</label>
-        <textarea id="fellowshipDesc" placeholder="e.g. Youth gathering for Bible study..." required></textarea>
-        <button type="button" onclick="postFellowship()">Post Fellowship <span>🙌</span></button>
-      </form>
+      <!-- Sermons Tab -->
+      <div id="sermons" class="tab-content">
+        <h2><i class="fas fa-book-open"></i> Manage Sermons</h2>
+        
+        <div class="tabs">
+          <div class="tab active" data-content="sermon-form">Add New Sermon</div>
+          <div class="tab" data-content="sermon-list">All Sermons</div>
+        </div>
+        
+        <div id="sermon-form" class="tab-content active">
+          <form id="sermonForm">
+            <div class="form-row">
+              <div>
+                <label>Sermon Title</label>
+                <input type="text" id="sermonTitle" placeholder="Enter sermon title" required>
+              </div>
+              <div>
+                <label>Preacher</label>
+                <input type="text" id="sermonPreacher" placeholder="Preacher's name" required>
+              </div>
+            </div>
+            <label>Date Preached</label>
+            <input type="date" id="sermonDate" required>
+            <label>Description</label>
+            <textarea id="sermonDesc" placeholder="Write a short sermon summary..." required></textarea>
+            <label>Video/Audio Link</label>
+            <input type="url" id="sermonMedia" placeholder="YouTube or audio link">
+            <button type="button" id="sermonBtn" onclick="postSermon()">
+              <span id="sermonBtnText">Post Sermon</span>
+              <span id="sermonBtnSpinner" class="spinner" style="display: none;"></span>
+            </button>
+          </form>
+        </div>
+        
+        <div id="sermon-list" class="tab-content">
+          <div style="overflow-x: auto;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Preacher</th>
+                  <th>Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="sermonsTableBody">
+                <tr>
+                  <td colspan="4" style="text-align: center; color: var(--text-light);">No sermons found</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
 
-      <h2>📅 Post Event</h2>
-      <form id="eventForm">
-        <label>Event Name</label>
-        <input type="text" id="eventName" placeholder="Event name" required>
-        <label>Date</label>
-        <input type="date" id="eventDate" required>
-        <label>Event Description</label>
-        <textarea id="eventDesc" placeholder="What is this event about?" required></textarea>
-        <label>Upload Image/Video (Optional)</label>
-        <input type="file" id="eventMedia" accept="image/*,video/*" multiple>
-        <div class="upload-preview" id="eventPreview"></div>
-        <button type="button" onclick="postEvent()">Post Event <span>📅</span></button>
-      </form>
+      <!-- Fellowships Tab -->
+      <div id="fellowships" class="tab-content">
+        <h2><i class="fas fa-users"></i> Manage Fellowships</h2>
+        
+        <div class="tabs">
+          <div class="tab active" data-content="fellowship-form">Add New Fellowship</div>
+          <div class="tab" data-content="fellowship-list">All Fellowships</div>
+        </div>
+        
+        <div id="fellowship-form" class="tab-content active">
+          <form id="fellowshipForm">
+            <div class="form-row">
+              <div>
+                <label>Fellowship Name</label>
+                <input type="text" id="fellowshipName" placeholder="e.g. Youth Fellowship" required>
+              </div>
+              <div>
+                <label>Meeting Day</label>
+                <select id="fellowshipDay" required>
+                  <option value="">Select Day</option>
+                  <option value="Monday">Monday</option>
+                  <option value="Tuesday">Tuesday</option>
+                  <option value="Wednesday">Wednesday</option>
+                  <option value="Thursday">Thursday</option>
+                  <option value="Friday">Friday</option>
+                  <option value="Saturday">Saturday</option>
+                  <option value="Sunday">Sunday</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div>
+                <label>Time</label>
+                <input type="time" id="fellowshipTime" required>
+              </div>
+              <div>
+                <label>Location</label>
+                <input type="text" id="fellowshipLocation" placeholder="e.g. Church Hall" required>
+              </div>
+            </div>
+            <label>Leader / Contact Person</label>
+            <input type="text" id="fellowshipLeader" placeholder="e.g. John Mwenda - 0712345678" required>
+            <label>Short Description</label>
+            <textarea id="fellowshipDesc" placeholder="e.g. Youth gathering for Bible study..." required></textarea>
+            <button type="button" id="fellowshipBtn" onclick="postFellowship()">
+              <span id="fellowshipBtnText">Post Fellowship</span>
+              <span id="fellowshipBtnSpinner" class="spinner" style="display: none;"></span>
+            </button>
+          </form>
+        </div>
+        
+        <div id="fellowship-list" class="tab-content">
+          <div style="overflow-x: auto;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Day</th>
+                  <th>Time</th>
+                  <th>Location</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="fellowshipsTableBody">
+                <tr>
+                  <td colspan="5" style="text-align: center; color: var(--text-light);">No fellowships found</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
 
-      <h2>🖼️ Upload Pictures/Videos</h2>
-      <form id="mediaForm">
-        <label>Title</label>
-        <input type="text" id="mediaTitle" placeholder="Enter media title" required>
-        <label>Choose Files</label>
-        <input type="file" id="mediaFile" accept="image/*,video/*" multiple required>
-        <div class="upload-preview" id="mediaPreview"></div>
-        <button type="button" onclick="uploadMedia()">Upload Media <span>🖼️</span></button>
-      </form>
+      <!-- Events Tab -->
+      <div id="events" class="tab-content">
+        <h2><i class="fas fa-calendar-alt"></i> Manage Events</h2>
+        
+        <div class="tabs">
+          <div class="tab active" data-content="event-form">Add New Event</div>
+          <div class="tab" data-content="event-list">All Events</div>
+        </div>
+        
+        <div id="event-form" class="tab-content active">
+          <form id="eventForm">
+            <div class="form-row">
+              <div>
+                <label>Event Name</label>
+                <input type="text" id="eventName" placeholder="Event name" required>
+              </div>
+              <div>
+                <label>Event Date</label>
+                <input type="date" id="eventDate" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div>
+                <label>Start Time</label>
+                <input type="time" id="eventStartTime" required>
+              </div>
+              <div>
+                <label>End Time</label>
+                <input type="time" id="eventEndTime">
+              </div>
+            </div>
+            <label>Event Description</label>
+            <textarea id="eventDesc" placeholder="What is this event about?" required></textarea>
+            <label>Event Type</label>
+            <select id="eventType" required>
+              <option value="">Select Event Type</option>
+              <option value="general">General Church Event</option>
+              <option value="mothers">Mothers Fellowship</option>
+              <option value="mens">Men's Fellowship</option>
+              <option value="youth">Youth Event</option>
+              <option value="children">Children's Event</option>
+              <option value="outreach">Community Outreach</option>
+              <option value="baptism">Baptism</option>
+              <option value="wedding">Wedding</option>
+              <option value="other">Other</option>
+            </select>
+            <label>Upload Image/Video (Optional)</label>
+            <input type="file" id="eventMedia" accept="image/*,video/*" multiple>
+            <div class="upload-preview" id="eventPreview"></div>
+            <button type="button" id="eventBtn" onclick="postEvent()">
+              <span id="eventBtnText">Post Event</span>
+              <span id="eventBtnSpinner" class="spinner" style="display: none;"></span>
+            </button>
+          </form>
+        </div>
+        
+        <div id="event-list" class="tab-content">
+          <div style="overflow-x: auto;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Type</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="eventsTableBody">
+                <tr>
+                  <td colspan="5" style="text-align: center; color: var(--text-light);">No events found</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
 
-      <button class="logout-btn" onclick="logout()">Logout <span>🚪</span></button>
+      <!-- Media Tab -->
+      <div id="media" class="tab-content">
+        <h2><i class="fas fa-photo-video"></i> Manage Media</h2>
+        
+        <div class="tabs">
+          <div class="tab active" data-content="media-form">Upload New Media</div>
+          <div class="tab" data-content="media-list">All Media</div>
+        </div>
+        
+        <div id="media-form" class="tab-content active">
+          <form id="mediaForm">
+            <label>Media Title</label>
+            <input type="text" id="mediaTitle" placeholder="Enter media title" required>
+            <label>Media Category</label>
+            <select id="mediaCategory" required>
+              <option value="">Select Category</option>
+              <option value="church-service">Church Service</option>
+              <option value="baptism">Baptism</option>
+              <option value="wedding">Wedding</option>
+              <option value="fellowship">Fellowship</option>
+              <option value="outreach">Outreach</option>
+              <option value="other">Other</option>
+            </select>
+            <label>Choose Files</label>
+            <input type="file" id="mediaFile" accept="image/*,video/*" multiple required>
+            <div class="upload-preview" id="mediaPreview"></div>
+            <button type="button" id="mediaBtn" onclick="uploadMedia()">
+              <span id="mediaBtnText">Upload Media</span>
+              <span id="mediaBtnSpinner" class="spinner" style="display: none;"></span>
+            </button>
+          </form>
+        </div>
+        
+        <div id="media-list" class="tab-content">
+          <div style="overflow-x: auto;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Category</th>
+                  <th>Type</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="mediaTableBody">
+                <tr>
+                  <td colspan="4" style="text-align: center; color: var(--text-light);">No media files found</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Attendance Tab -->
+      <div id="attendance" class="tab-content">
+        <h2><i class="fas fa-chart-bar"></i> Church Attendance</h2>
+        
+        <div class="tabs">
+          <div class="tab active" data-content="attendance-form">Record Attendance</div>
+          <div class="tab" data-content="attendance-list">Attendance History</div>
+          <div class="tab" data-content="attendance-chart">Attendance Charts</div>
+        </div>
+        
+        <div id="attendance-form" class="tab-content active">
+          <form id="attendanceForm">
+            <div class="form-row">
+              <div>
+                <label>Date</label>
+                <input type="date" id="attendanceDate" required>
+              </div>
+              <div>
+                <label>Service Type</label>
+                <select id="serviceType" required>
+                  <option value="">Select Service</option>
+                  <option value="morning">Morning Service</option>
+                  <option value="evening">Evening Service</option>
+                  <option value="midweek">Midweek Service</option>
+                  <option value="special">Special Service</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div>
+                <label>Men</label>
+                <input type="number" id="menCount" placeholder="Number of men" min="0" required>
+              </div>
+              <div>
+                <label>Women</label>
+                <input type="number" id="womenCount" placeholder="Number of women" min="0" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div>
+                <label>Youth</label>
+                <input type="number" id="youthCount" placeholder="Number of youth" min="0" required>
+              </div>
+              <div>
+                <label>Children</label>
+                <input type="number" id="childrenCount" placeholder="Number of children" min="0" required>
+              </div>
+            </div>
+            <label>Visitors</label>
+            <input type="number" id="visitorsCount" placeholder="Number of visitors" min="0" required>
+            <button type="button" id="attendanceBtn" onclick="recordAttendance()">
+              <span id="attendanceBtnText">Record Attendance</span>
+              <span id="attendanceBtnSpinner" class="spinner" style="display: none;"></span>
+            </button>
+          </form>
+        </div>
+        
+        <div id="attendance-list" class="tab-content">
+          <div style="overflow-x: auto;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Service</th>
+                  <th>Men</th>
+                  <th>Women</th>
+                  <th>Youth</th>
+                  <th>Children</th>
+                  <th>Visitors</th>
+                  <th>Total</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="attendanceTableBody">
+                <tr>
+                  <td colspan="9" style="text-align: center; color: var(--text-light);">No attendance records found</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div id="attendance-chart" class="tab-content">
+          <div class="chart-container" style="height: 400px;">
+            <canvas id="attendanceTrendChart"></canvas>
+          </div>
+          <div class="chart-container" style="height: 400px;">
+            <canvas id="attendanceDemographicsChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Youth Tab -->
+      <div id="youth" class="tab-content">
+        <h2><i class="fas fa-child"></i> Youth Members</h2>
+        
+        <div class="tabs">
+          <div class="tab active" data-content="youth-form">Add Youth Member</div>
+          <div class="tab" data-content="youth-list">All Youth Members</div>
+        </div>
+        
+        <div id="youth-form" class="tab-content active">
+          <form id="youthForm">
+            <div class="form-row">
+              <div>
+                <label>Full Name</label>
+                <input type="text" id="youthName" placeholder="Full name" required>
+              </div>
+              <div>
+                <label>Age</label>
+                <input type="number" id="youthAge" placeholder="Age" min="13" max="35" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div>
+                <label>Gender</label>
+                <select id="youthGender" required>
+                  <option value="">Select Gender</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                </select>
+              </div>
+              <div>
+                <label>Phone Number</label>
+                <input type="tel" id="youthPhone" placeholder="Phone number">
+              </div>
+            </div>
+            <label>School/College/Work</label>
+            <input type="text" id="youthSchool" placeholder="School, college or workplace">
+            <label>Interests/Talents</label>
+            <textarea id="youthInterests" placeholder="e.g. Music, sports, drama, etc."></textarea>
+            <button type="button" id="youthBtn" onclick="addYouth()">
+              <span id="youthBtnText">Add Youth Member</span>
+              <span id="youthBtnSpinner" class="spinner" style="display: none;"></span>
+            </button>
+          </form>
+        </div>
+        
+        <div id="youth-list" class="tab-content">
+          <div style="overflow-x: auto;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Age</th>
+                  <th>Gender</th>
+                  <th>Phone</th>
+                  <th>School/Work</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="youthTableBody">
+                <tr>
+                  <td colspan="6" style="text-align: center; color: var(--text-light);">No youth members found</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Elders Tab -->
+      <div id="elders" class="tab-content">
+        <h2><i class="fas fa-user-tie"></i> Church Elders</h2>
+        
+        <div class="tabs">
+          <div class="tab active" data-content="elder-form">Add Elder</div>
+          <div class="tab" data-content="elder-list">All Elders</div>
+        </div>
+        
+        <div id="elder-form" class="tab-content active">
+          <form id="elderForm">
+            <div class="form-row">
+              <div>
+                <label>Full Name</label>
+                <input type="text" id="elderName" placeholder="Full name" required>
+              </div>
+              <div>
+                <label>Position</label>
+                <input type="text" id="elderPosition" placeholder="e.g. Senior Pastor, Elder, Deacon" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div>
+                <label>Phone Number</label>
+                <input type="tel" id="elderPhone" placeholder="Phone number">
+              </div>
+              <div>
+                <label>Email</label>
+                <input type="email" id="elderEmail" placeholder="Email address">
+              </div>
+            </div>
+            <label>Responsibilities</label>
+            <textarea id="elderResponsibilities" placeholder="e.g. Oversees youth ministry, leads worship, etc."></textarea>
+            <label>Bio</label>
+            <textarea id="elderBio" placeholder="Short biography"></textarea>
+            <button type="button" id="elderBtn" onclick="addElder()">
+              <span id="elderBtnText">Add Elder</span>
+              <span id="elderBtnSpinner" class="spinner" style="display: none;"></span>
+            </button>
+          </form>
+        </div>
+        
+        <div id="elder-list" class="tab-content">
+          <div style="overflow-x: auto;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Position</th>
+                  <th>Phone</th>
+                  <th>Email</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="eldersTableBody">
+                <tr>
+                  <td colspan="5" style="text-align: center; color: var(--text-light);">No elders found</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Songs Tab -->
+      <div id="songs" class="tab-content">
+        <h2><i class="fas fa-music"></i> Church Songs</h2>
+        
+        <div class="tabs">
+          <div class="tab active" data-content="song-form">Add New Song</div>
+          <div class="tab" data-content="song-list">All Songs</div>
+        </div>
+        
+        <div id="song-form" class="tab-content active">
+          <form id="songForm">
+            <div class="form-row">
+              <div>
+                <label>Song Title</label>
+                <input type="text" id="songTitle" placeholder="Song title" required>
+              </div>
+              <div>
+                <label>Author/Artist</label>
+                <input type="text" id="songAuthor" placeholder="Song author or artist">
+              </div>
+            </div>
+            <div class="form-row">
+              <div>
+                <label>Category</label>
+                <select id="songCategory" required>
+                  <option value="">Select Category</option>
+                  <option value="worship">Worship</option>
+                  <option value="praise">Praise</option>
+                  <option value="hymn">Hymn</option>
+                  <option value="communion">Communion</option>
+                  <option value="baptism">Baptism</option>
+                  <option value="offertory">Offertory</option>
+                  <option value="christmas">Christmas</option>
+                  <option value="easter">Easter</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label>Key (Optional)</label>
+                <input type="text" id="songKey" placeholder="e.g. C, G, Dm">
+              </div>
+            </div>
+            <label>Lyrics</label>
+            <textarea id="songLyrics" placeholder="Song lyrics" rows="10" required></textarea>
+            <button type="button" id="songBtn" onclick="addSong()">
+              <span id="songBtnText">Add Song</span>
+              <span id="songBtnSpinner" class="spinner" style="display: none;"></span>
+            </button>
+          </form>
+        </div>
+        
+        <div id="song-list" class="tab-content">
+          <div style="overflow-x: auto;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Author</th>
+                  <th>Category</th>
+                  <th>Key</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="songsTableBody">
+                <tr>
+                  <td colspan="5" style="text-align: center; color: var(--text-light);">No songs found</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <button class="logout-btn" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
     </section>
+  </div>
+
+  <!-- View/Edit Modal -->
+  <div id="viewModal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeModal()">&times;</span>
+      <div id="modalContent"></div>
+    </div>
   </div>
 
   <footer>
@@ -396,20 +1330,37 @@
   </footer>
 
   <script>
-        // Redirect if not logged in
-    if (localStorage.getItem('loggedIn') !== 'true') {
-      window.location.href = 'index.html';
+    // Initialize Supabase
+    const supabaseUrl = 'https://zcmreyyamzemiehlyxbo.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjbXJleXlhbXplbWllaGx5eGJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwMDMwNzMsImV4cCI6MjA3MzU3OTA3M30.EHuM0BK22U7XFCKQux-CuXB6oiSzG4HyxT_CumHsBUk';
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+    // Check if user is authenticated using localStorage
+    function checkAuth() {
+      const isLoggedIn = localStorage.getItem('loggedIn');
+      
+      if (!isLoggedIn || isLoggedIn !== 'true') {
+        // User is not authenticated, redirect to login page
+        window.location.href = 'index.html';
+      }
     }
 
+    // Logout function
     function logout() {
       localStorage.removeItem('loggedIn');
-      window.location.href = 'index.html';
+      localStorage.removeItem('username');
+      showToast('Logged out successfully', 'success');
+      setTimeout(() => window.location.href = 'index.html', 1000);
     }
+
     // Toast notification
     function showToast(message, type = 'success') {
       const toast = document.createElement('div');
       toast.className = `toast ${type}`;
-      toast.innerHTML = `${type === 'success' ? '✅' : '⚠️'} ${message}`;
+      toast.innerHTML = `${type === 'success' ? '<i class="fas fa-check-circle"></i>' : 
+                         type === 'error' ? '<i class="fas fa-exclamation-circle"></i>' :
+                         type === 'warning' ? '<i class="fas fa-exclamation-triangle"></i>' :
+                         '<i class="fas fa-info-circle"></i>'} ${message}`;
       document.body.appendChild(toast);
       setTimeout(() => toast.remove(), 3000);
     }
@@ -417,6 +1368,68 @@
     // Mobile menu toggle
     document.getElementById('mobile-menu-toggle')?.addEventListener('click', () => {
       document.querySelector('.nav-links').classList.toggle('active');
+    });
+
+    // Tab navigation
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const tabId = link.getAttribute('data-tab');
+        
+        // Update active nav link
+        document.querySelectorAll('.nav-links a').forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+        
+        // Show corresponding tab content
+        document.querySelectorAll('.tab-content').forEach(content => {
+          content.classList.remove('active');
+        });
+        document.getElementById(tabId).classList.add('active');
+        
+        // Load data for the tab if needed
+        if (tabId === 'dashboard') {
+          loadDashboardData();
+        } else if (tabId === 'sermons') {
+          loadSermons();
+        } else if (tabId === 'fellowships') {
+          loadFellowships();
+        } else if (tabId === 'events') {
+          loadEvents();
+        } else if (tabId === 'media') {
+          loadMedia();
+        } else if (tabId === 'attendance') {
+          loadAttendance();
+        } else if (tabId === 'youth') {
+          loadYouth();
+        } else if (tabId === 'elders') {
+          loadElders();
+        } else if (tabId === 'songs') {
+          loadSongs();
+        }
+      });
+    });
+
+    // Sub-tab navigation
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const contentId = tab.getAttribute('data-content');
+        const parentTab = tab.closest('.tab-content').id;
+        
+        // Update active sub-tab
+        tab.parentElement.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        
+        // Show corresponding sub-tab content
+        document.querySelectorAll(`#${parentTab} .tab-content`).forEach(content => {
+          content.classList.remove('active');
+        });
+        document.getElementById(contentId).classList.add('active');
+        
+        // Load specific data if needed
+        if (parentTab === 'attendance' && contentId === 'attendance-chart') {
+          renderAttendanceCharts();
+        }
+      });
     });
 
     // Media preview
@@ -442,75 +1455,2362 @@
     setupMediaPreview('eventMedia', 'eventPreview');
     setupMediaPreview('mediaFile', 'mediaPreview');
 
-    // Post sermon
-    function postSermon() {
+    // Load dashboard data
+    async function loadDashboardData() {
+      try {
+        // Get sermon count
+        const { data: sermons, error: sermonsError } = await supabase
+          .from('sermons')
+          .select('id');
+        
+        if (sermonsError) throw sermonsError;
+        document.getElementById('sermonCount').textContent = sermons?.length || 0;
+        
+        // Get fellowship count
+        const { data: fellowships, error: fellowshipsError } = await supabase
+          .from('fellowships')
+          .select('id');
+        
+        if (fellowshipsError) throw fellowshipsError;
+        document.getElementById('fellowshipCount').textContent = fellowships?.length || 0;
+        
+        // Get event count (upcoming events)
+        const today = new Date().toISOString().split('T')[0];
+        const { data: events, error: eventsError } = await supabase
+          .from('events')
+          .select('id')
+          .gte('date', today);
+        
+        if (eventsError) throw eventsError;
+        document.getElementById('eventCount').textContent = events?.length || 0;
+        
+        // Get media count
+        const { data: media, error: mediaError } = await supabase
+          .from('media')
+          .select('id');
+        
+        if (mediaError) throw mediaError;
+        document.getElementById('mediaCount').textContent = media?.length || 0;
+        
+        // Get youth count
+        const { data: youth, error: youthError } = await supabase
+          .from('youth')
+          .select('id');
+        
+        if (youthError) throw youthError;
+        document.getElementById('youthCount').textContent = youth?.length || 0;
+        
+        // Get elders count
+        const { data: elders, error: eldersError } = await supabase
+          .from('elders')
+          .select('id');
+        
+        if (eldersError) throw eldersError;
+        document.getElementById('eldersCount').textContent = elders?.length || 0;
+        
+        // Get songs count
+        const { data: songs, error: songsError } = await supabase
+          .from('songs')
+          .select('id');
+        
+        if (songsError) throw songsError;
+        document.getElementById('songsCount').textContent = songs?.length || 0;
+        
+        // Get average Sunday attendance
+        const { data: attendance, error: attendanceError } = await supabase
+          .from('attendance')
+          .select('men, women, youth, children, visitors');
+        
+        if (attendanceError) throw attendanceError;
+        
+        if (attendance && attendance.length > 0) {
+          const totalAttendance = attendance.reduce((sum, record) => {
+            return sum + (record.men || 0) + (record.women || 0) + (record.youth || 0) + 
+                         (record.children || 0) + (record.visitors || 0);
+          }, 0);
+          const avgAttendance = Math.round(totalAttendance / attendance.length);
+          document.getElementById('avgAttendance').textContent = avgAttendance;
+        } else {
+          document.getElementById('avgAttendance').textContent = '0';
+        }
+        
+        // Load recent activities
+        loadRecentActivities();
+        
+        // Render dashboard chart
+        renderDashboardChart();
+      } catch (error) {
+        showToast(`Error loading dashboard: ${error.message}`, 'error');
+      }
+    }
+
+    // Render dashboard chart
+    function renderDashboardChart() {
+      const ctx = document.getElementById('attendanceChart');
+      if (!ctx) return;
+      
+      // Get last 4 weeks of attendance data
+      const today = new Date();
+      const fourWeeksAgo = new Date(today);
+      fourWeeksAgo.setDate(fourWeeksAgo.getDate() - 28);
+      
+      supabase
+        .from('attendance')
+        .select('date, men, women, youth, children, visitors')
+        .gte('date', fourWeeksAgo.toISOString().split('T')[0])
+        .order('date', { ascending: true })
+        .then(({ data, error }) => {
+          if (error) {
+            console.error('Error fetching attendance data:', error);
+            return;
+          }
+          
+          const labels = [];
+          const menData = [];
+          const womenData = [];
+          const youthData = [];
+          const childrenData = [];
+          const visitorsData = [];
+          
+          data.forEach(record => {
+            const date = new Date(record.date);
+            labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+            menData.push(record.men || 0);
+            womenData.push(record.women || 0);
+            youthData.push(record.youth || 0);
+            childrenData.push(record.children || 0);
+            visitorsData.push(record.visitors || 0);
+          });
+          
+          new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: labels,
+              datasets: [
+                {
+                  label: 'Men',
+                  data: menData,
+                  borderColor: '#4a6de5',
+                  backgroundColor: 'rgba(74, 109, 229, 0.1)',
+                  tension: 0.3
+                },
+                {
+                  label: 'Women',
+                  data: womenData,
+                  borderColor: '#f85a5a',
+                  backgroundColor: 'rgba(248, 90, 90, 0.1)',
+                  tension: 0.3
+                },
+                {
+                  label: 'Youth',
+                  data: youthData,
+                  borderColor: '#4cd3c2',
+                  backgroundColor: 'rgba(76, 211, 194, 0.1)',
+                  tension: 0.3
+                },
+                {
+                  label: 'Children',
+                  data: childrenData,
+                  borderColor: '#f57c00',
+                  backgroundColor: 'rgba(245, 124, 0, 0.1)',
+                  tension: 0.3
+                },
+                {
+                  label: 'Visitors',
+                  data: visitorsData,
+                  borderColor: '#0288d1',
+                  backgroundColor: 'rgba(2, 136, 209, 0.1)',
+                  tension: 0.3
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                title: {
+                  display: true,
+                  text: 'Church Attendance Trend (Last 4 Weeks)'
+                },
+                legend: {
+                  position: 'bottom'
+                }
+              },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  title: {
+                    display: true,
+                    text: 'Number of People'
+                  }
+                }
+              }
+            }
+          });
+        });
+    }
+
+    // Load recent activities
+    async function loadRecentActivities() {
+      try {
+        // Get recent sermons
+        const { data: recentSermons, error: sermonsError } = await supabase
+          .from('sermons')
+          .select('title, created_at')
+          .order('created_at', { ascending: false })
+          .limit(3);
+        
+        // Get recent events
+        const { data: recentEvents, error: eventsError } = await supabase
+          .from('events')
+          .select('name, created_at')
+          .order('created_at', { ascending: false })
+          .limit(3);
+        
+        // Get recent media
+        const { data: recentMedia, error: mediaError } = await supabase
+          .from('media')
+          .select('title, created_at')
+          .order('created_at', { ascending: false })
+          .limit(3);
+        
+        // Get recent attendance
+        const { data: recentAttendance, error: attendanceError } = await supabase
+          .from('attendance')
+          .select('date, created_at')
+          .order('created_at', { ascending: false })
+          .limit(3);
+        
+        if (sermonsError || eventsError || mediaError || attendanceError) {
+          throw new Error('Error loading recent activities');
+        }
+        
+        // Combine and sort activities
+        const activities = [
+          ...(recentSermons || []).map(item => ({...item, type: 'sermon', icon: 'fa-book'})),
+          ...(recentEvents || []).map(item => ({...item, type: 'event', icon: 'fa-calendar'})),
+          ...(recentMedia || []).map(item => ({...item, type: 'media', icon: 'fa-photo-video'})),
+          ...(recentAttendance || []).map(item => ({...item, type: 'attendance', icon: 'fa-chart-bar', title: 'Attendance recorded'}))
+        ];
+        
+        activities.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        
+        // Display activities
+        const activitiesContainer = document.getElementById('recentActivities');
+        activitiesContainer.innerHTML = '';
+        
+        if (activities.length === 0) {
+          activitiesContainer.innerHTML = '<p style="text-align: center; color: var(--text-light);">No recent activities</p>';
+          return;
+        }
+        
+        activities.slice(0, 5).forEach(activity => {
+          const activityEl = document.createElement('div');
+          activityEl.className = 'activity-item';
+          activityEl.style.padding = '12px';
+          activityEl.style.marginBottom = '10px';
+          activityEl.style.background = 'rgba(255, 255, 255, 0.7)';
+          activityEl.style.borderRadius = '8px';
+          activityEl.style.display = 'flex';
+          activityEl.style.alignItems = 'center';
+          activityEl.style.gap = '12px';
+          
+          const iconEl = document.createElement('div');
+          iconEl.className = 'activity-icon';
+          iconEl.style.width = '36px';
+          iconEl.style.height = '36px';
+          iconEl.style.borderRadius = '50%';
+          iconEl.style.background = 'var(--primary-light)';
+          iconEl.style.display = 'flex';
+          iconEl.style.alignItems = 'center';
+          iconEl.style.justifyContent = 'center';
+          iconEl.style.color = 'white';
+          iconEl.innerHTML = `<i class="fas ${activity.icon}"></i>`;
+          
+          const detailsEl = document.createElement('div');
+          detailsEl.style.flex = '1';
+          
+          const titleEl = document.createElement('div');
+          titleEl.style.fontWeight = '600';
+          titleEl.textContent = activity.type === 'sermon' ? `Sermon: ${activity.title}` :
+                                activity.type === 'event' ? `Event: ${activity.title}` :
+                                activity.type === 'media' ? `Media: ${activity.title}` :
+                                activity.title;
+          
+          const dateEl = document.createElement('div');
+          dateEl.style.fontSize = '0.85rem';
+          dateEl.style.color = 'var(--text-light)';
+          dateEl.textContent = new Date(activity.created_at).toLocaleString();
+          
+          detailsEl.appendChild(titleEl);
+          detailsEl.appendChild(dateEl);
+          
+          activityEl.appendChild(iconEl);
+          activityEl.appendChild(detailsEl);
+          activitiesContainer.appendChild(activityEl);
+        });
+      } catch (error) {
+        showToast(`Error loading activities: ${error.message}`, 'error');
+      }
+    }
+
+    // Load sermons
+    async function loadSermons() {
+      try {
+        const { data: sermons, error } = await supabase
+          .from('sermons')
+          .select('*')
+          .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        
+        const tableBody = document.getElementById('sermonsTableBody');
+        tableBody.innerHTML = '';
+        
+        if (sermons.length === 0) {
+          tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-light);">No sermons found</td></tr>';
+          return;
+        }
+        
+        sermons.forEach(sermon => {
+          const row = document.createElement('tr');
+          
+          const titleCell = document.createElement('td');
+          titleCell.textContent = sermon.title;
+          
+          const preacherCell = document.createElement('td');
+          preacherCell.textContent = sermon.preacher;
+          
+          const dateCell = document.createElement('td');
+          dateCell.textContent = new Date(sermon.date).toLocaleDateString();
+          
+          const actionsCell = document.createElement('td');
+          actionsCell.className = 'action-buttons';
+          
+          const viewBtn = document.createElement('button');
+          viewBtn.className = 'btn-small btn-view';
+          viewBtn.innerHTML = '<i class="fas fa-eye"></i>';
+          viewBtn.onclick = () => viewSermon(sermon);
+          
+          const editBtn = document.createElement('button');
+          editBtn.className = 'btn-small btn-edit';
+          editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+          editBtn.onclick = () => editSermon(sermon);
+          
+          const deleteBtn = document.createElement('button');
+          deleteBtn.className = 'btn-small btn-delete';
+          deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+          deleteBtn.onclick = () => deleteSermon(sermon.id);
+          
+          actionsCell.appendChild(viewBtn);
+          actionsCell.appendChild(editBtn);
+          actionsCell.appendChild(deleteBtn);
+          
+          row.appendChild(titleCell);
+          row.appendChild(preacherCell);
+          row.appendChild(dateCell);
+          row.appendChild(actionsCell);
+          
+          tableBody.appendChild(row);
+        });
+      } catch (error) {
+        showToast(`Error loading sermons: ${error.message}`, 'error');
+      }
+    }
+
+    // Load fellowships
+    async function loadFellowships() {
+      try {
+        const { data: fellowships, error } = await supabase
+          .from('fellowships')
+          .select('*')
+          .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        
+        const tableBody = document.getElementById('fellowshipsTableBody');
+        tableBody.innerHTML = '';
+        
+        if (fellowships.length === 0) {
+          tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-light);">No fellowships found</td></tr>';
+          return;
+        }
+        
+        fellowships.forEach(fellowship => {
+          const row = document.createElement('tr');
+          
+          const nameCell = document.createElement('td');
+          nameCell.textContent = fellowship.name;
+          
+          const dayCell = document.createElement('td');
+          dayCell.textContent = fellowship.day;
+          
+          const timeCell = document.createElement('td');
+          timeCell.textContent = fellowship.time;
+          
+          const locationCell = document.createElement('td');
+          locationCell.textContent = fellowship.location;
+          
+          const actionsCell = document.createElement('td');
+          actionsCell.className = 'action-buttons';
+          
+          const viewBtn = document.createElement('button');
+          viewBtn.className = 'btn-small btn-view';
+          viewBtn.innerHTML = '<i class="fas fa-eye"></i>';
+          viewBtn.onclick = () => viewFellowship(fellowship);
+          
+          const editBtn = document.createElement('button');
+          editBtn.className = 'btn-small btn-edit';
+          editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+          editBtn.onclick = () => editFellowship(fellowship);
+          
+          const deleteBtn = document.createElement('button');
+          deleteBtn.className = 'btn-small btn-delete';
+          deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+          deleteBtn.onclick = () => deleteFellowship(fellowship.id);
+          
+          actionsCell.appendChild(viewBtn);
+          actionsCell.appendChild(editBtn);
+          actionsCell.appendChild(deleteBtn);
+          
+          row.appendChild(nameCell);
+          row.appendChild(dayCell);
+          row.appendChild(timeCell);
+          row.appendChild(locationCell);
+          row.appendChild(actionsCell);
+          
+          tableBody.appendChild(row);
+        });
+      } catch (error) {
+        showToast(`Error loading fellowships: ${error.message}`, 'error');
+      }
+    }
+
+    // Load events
+    async function loadEvents() {
+      try {
+        const { data: events, error } = await supabase
+          .from('events')
+          .select('*')
+          .order('date', { ascending: true });
+        
+        if (error) throw error;
+        
+        const tableBody = document.getElementById('eventsTableBody');
+        tableBody.innerHTML = '';
+        
+        if (events.length === 0) {
+          tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-light);">No events found</td></tr>';
+          return;
+        }
+        
+        events.forEach(event => {
+          const row = document.createElement('tr');
+          
+          const nameCell = document.createElement('td');
+          nameCell.textContent = event.name;
+          
+          const dateCell = document.createElement('td');
+          dateCell.textContent = new Date(event.date).toLocaleDateString();
+          
+          const timeCell = document.createElement('td');
+          timeCell.textContent = `${event.start_time}${event.end_time ? ' - ' + event.end_time : ''}`;
+          
+          const typeCell = document.createElement('td');
+          typeCell.textContent = event.type.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+          
+          const actionsCell = document.createElement('td');
+          actionsCell.className = 'action-buttons';
+          
+          const viewBtn = document.createElement('button');
+          viewBtn.className = 'btn-small btn-view';
+          viewBtn.innerHTML = '<i class="fas fa-eye"></i>';
+          viewBtn.onclick = () => viewEvent(event);
+          
+          const editBtn = document.createElement('button');
+          editBtn.className = 'btn-small btn-edit';
+          editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+          editBtn.onclick = () => editEvent(event);
+          
+          const deleteBtn = document.createElement('button');
+          deleteBtn.className = 'btn-small btn-delete';
+          deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+          deleteBtn.onclick = () => deleteEvent(event.id);
+          
+          actionsCell.appendChild(viewBtn);
+          actionsCell.appendChild(editBtn);
+          actionsCell.appendChild(deleteBtn);
+          
+          row.appendChild(nameCell);
+          row.appendChild(dateCell);
+          row.appendChild(timeCell);
+          row.appendChild(typeCell);
+          row.appendChild(actionsCell);
+          
+          tableBody.appendChild(row);
+        });
+      } catch (error) {
+        showToast(`Error loading events: ${error.message}`, 'error');
+      }
+    }
+
+    // Load media
+    async function loadMedia() {
+      try {
+        const { data: media, error } = await supabase
+          .from('media')
+          .select('*')
+          .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        
+        const tableBody = document.getElementById('mediaTableBody');
+        tableBody.innerHTML = '';
+        
+        if (media.length === 0) {
+          tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-light);">No media files found</td></tr>';
+          return;
+        }
+        
+        media.forEach(item => {
+          const row = document.createElement('tr');
+          
+          const titleCell = document.createElement('td');
+          titleCell.textContent = item.title;
+          
+          const categoryCell = document.createElement('td');
+          categoryCell.textContent = item.category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+          
+          const typeCell = document.createElement('td');
+          typeCell.innerHTML = `<i class="fas fa-${item.type === 'image' ? 'image' : 'video'}"></i> ${item.type}`;
+          
+          const actionsCell = document.createElement('td');
+          actionsCell.className = 'action-buttons';
+          
+          const viewBtn = document.createElement('button');
+          viewBtn.className = 'btn-small btn-view';
+          viewBtn.innerHTML = '<i class="fas fa-eye"></i>';
+          viewBtn.onclick = () => viewMedia(item);
+          
+          const deleteBtn = document.createElement('button');
+          deleteBtn.className = 'btn-small btn-delete';
+          deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+          deleteBtn.onclick = () => deleteMedia(item.id);
+          
+          actionsCell.appendChild(viewBtn);
+          actionsCell.appendChild(deleteBtn);
+          
+          row.appendChild(titleCell);
+          row.appendChild(categoryCell);
+          row.appendChild(typeCell);
+          row.appendChild(actionsCell);
+          
+          tableBody.appendChild(row);
+        });
+      } catch (error) {
+        showToast(`Error loading media: ${error.message}`, 'error');
+      }
+    }
+
+    // Load attendance
+    async function loadAttendance() {
+      try {
+        const { data: attendance, error } = await supabase
+          .from('attendance')
+          .select('*')
+          .order('date', { ascending: false });
+        
+        if (error) throw error;
+        
+        const tableBody = document.getElementById('attendanceTableBody');
+        tableBody.innerHTML = '';
+        
+        if (attendance.length === 0) {
+          tableBody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: var(--text-light);">No attendance records found</td></tr>';
+          return;
+        }
+        
+        attendance.forEach(record => {
+          const row = document.createElement('tr');
+          
+          const dateCell = document.createElement('td');
+          dateCell.textContent = new Date(record.date).toLocaleDateString();
+          
+          const serviceCell = document.createElement('td');
+          serviceCell.textContent = record.service_type.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+          
+          const menCell = document.createElement('td');
+          menCell.textContent = record.men || 0;
+          
+          const womenCell = document.createElement('td');
+          womenCell.textContent = record.women || 0;
+          
+          const youthCell = document.createElement('td');
+          youthCell.textContent = record.youth || 0;
+          
+          const childrenCell = document.createElement('td');
+          childrenCell.textContent = record.children || 0;
+          
+          const visitorsCell = document.createElement('td');
+          visitorsCell.textContent = record.visitors || 0;
+          
+          const totalCell = document.createElement('td');
+          const total = (record.men || 0) + (record.women || 0) + (record.youth || 0) + 
+                       (record.children || 0) + (record.visitors || 0);
+          totalCell.textContent = total;
+          
+          const actionsCell = document.createElement('td');
+          actionsCell.className = 'action-buttons';
+          
+          const viewBtn = document.createElement('button');
+          viewBtn.className = 'btn-small btn-view';
+          viewBtn.innerHTML = '<i class="fas fa-eye"></i>';
+          viewBtn.onclick = () => viewAttendance(record);
+          
+          const editBtn = document.createElement('button');
+          editBtn.className = 'btn-small btn-edit';
+          editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+          editBtn.onclick = () => editAttendance(record);
+          
+          const deleteBtn = document.createElement('button');
+          deleteBtn.className = 'btn-small btn-delete';
+          deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+          deleteBtn.onclick = () => deleteAttendance(record.id);
+          
+          actionsCell.appendChild(viewBtn);
+          actionsCell.appendChild(editBtn);
+          actionsCell.appendChild(deleteBtn);
+          
+          row.appendChild(dateCell);
+          row.appendChild(serviceCell);
+          row.appendChild(menCell);
+          row.appendChild(womenCell);
+          row.appendChild(youthCell);
+          row.appendChild(childrenCell);
+          row.appendChild(visitorsCell);
+          row.appendChild(totalCell);
+          row.appendChild(actionsCell);
+          
+          tableBody.appendChild(row);
+        });
+      } catch (error) {
+        showToast(`Error loading attendance: ${error.message}`, 'error');
+      }
+    }
+
+    // Load youth
+    async function loadYouth() {
+      try {
+        const { data: youth, error } = await supabase
+          .from('youth')
+          .select('*')
+          .order('name', { ascending: true });
+        
+        if (error) throw error;
+        
+        const tableBody = document.getElementById('youthTableBody');
+        tableBody.innerHTML = '';
+        
+        if (youth.length === 0) {
+          tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-light);">No youth members found</td></tr>';
+          return;
+        }
+        
+        youth.forEach(member => {
+          const row = document.createElement('tr');
+          
+          const nameCell = document.createElement('td');
+          nameCell.textContent = member.name;
+          
+          const ageCell = document.createElement('td');
+          ageCell.textContent = member.age;
+          
+          const genderCell = document.createElement('td');
+          genderCell.textContent = member.gender.charAt(0).toUpperCase() + member.gender.slice(1);
+          
+          const phoneCell = document.createElement('td');
+          phoneCell.textContent = member.phone || 'N/A';
+          
+          const schoolCell = document.createElement('td');
+          schoolCell.textContent = member.school || 'N/A';
+          
+          const actionsCell = document.createElement('td');
+          actionsCell.className = 'action-buttons';
+          
+          const viewBtn = document.createElement('button');
+          viewBtn.className = 'btn-small btn-view';
+          viewBtn.innerHTML = '<i class="fas fa-eye"></i>';
+          viewBtn.onclick = () => viewYouth(member);
+          
+          const editBtn = document.createElement('button');
+          editBtn.className = 'btn-small btn-edit';
+          editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+          editBtn.onclick = () => editYouth(member);
+          
+          const deleteBtn = document.createElement('button');
+          deleteBtn.className = 'btn-small btn-delete';
+          deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+          deleteBtn.onclick = () => deleteYouth(member.id);
+          
+          actionsCell.appendChild(viewBtn);
+          actionsCell.appendChild(editBtn);
+          actionsCell.appendChild(deleteBtn);
+          
+          row.appendChild(nameCell);
+          row.appendChild(ageCell);
+          row.appendChild(genderCell);
+          row.appendChild(phoneCell);
+          row.appendChild(schoolCell);
+          row.appendChild(actionsCell);
+          
+          tableBody.appendChild(row);
+        });
+      } catch (error) {
+        showToast(`Error loading youth: ${error.message}`, 'error');
+      }
+    }
+
+    // Load elders
+    async function loadElders() {
+      try {
+        const { data: elders, error } = await supabase
+          .from('elders')
+          .select('*')
+          .order('name', { ascending: true });
+        
+        if (error) throw error;
+        
+        const tableBody = document.getElementById('eldersTableBody');
+        tableBody.innerHTML = '';
+        
+        if (elders.length === 0) {
+          tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-light);">No elders found</td></tr>';
+          return;
+        }
+        
+        elders.forEach(elder => {
+          const row = document.createElement('tr');
+          
+          const nameCell = document.createElement('td');
+          nameCell.textContent = elder.name;
+          
+          const positionCell = document.createElement('td');
+          positionCell.textContent = elder.position;
+          
+          const phoneCell = document.createElement('td');
+          phoneCell.textContent = elder.phone || 'N/A';
+          
+          const emailCell = document.createElement('td');
+          emailCell.textContent = elder.email || 'N/A';
+          
+          const actionsCell = document.createElement('td');
+          actionsCell.className = 'action-buttons';
+          
+          const viewBtn = document.createElement('button');
+          viewBtn.className = 'btn-small btn-view';
+          viewBtn.innerHTML = '<i class="fas fa-eye"></i>';
+          viewBtn.onclick = () => viewElder(elder);
+          
+          const editBtn = document.createElement('button');
+          editBtn.className = 'btn-small btn-edit';
+          editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+          editBtn.onclick = () => editElder(elder);
+          
+          const deleteBtn = document.createElement('button');
+          deleteBtn.className = 'btn-small btn-delete';
+          deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+          deleteBtn.onclick = () => deleteElder(elder.id);
+          
+          actionsCell.appendChild(viewBtn);
+          actionsCell.appendChild(editBtn);
+          actionsCell.appendChild(deleteBtn);
+          
+          row.appendChild(nameCell);
+          row.appendChild(positionCell);
+          row.appendChild(phoneCell);
+          row.appendChild(emailCell);
+          row.appendChild(actionsCell);
+          
+          tableBody.appendChild(row);
+        });
+      } catch (error) {
+        showToast(`Error loading elders: ${error.message}`, 'error');
+      }
+    }
+
+    // Load songs
+    async function loadSongs() {
+      try {
+        const { data: songs, error } = await supabase
+          .from('songs')
+          .select('*')
+          .order('title', { ascending: true });
+        
+        if (error) throw error;
+        
+        const tableBody = document.getElementById('songsTableBody');
+        tableBody.innerHTML = '';
+        
+        if (songs.length === 0) {
+          tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-light);">No songs found</td></tr>';
+          return;
+        }
+        
+        songs.forEach(song => {
+          const row = document.createElement('tr');
+          
+          const titleCell = document.createElement('td');
+          titleCell.textContent = song.title;
+          
+          const authorCell = document.createElement('td');
+          authorCell.textContent = song.author || 'N/A';
+          
+          const categoryCell = document.createElement('td');
+          categoryCell.textContent = song.category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+          
+          const keyCell = document.createElement('td');
+          keyCell.textContent = song.key || 'N/A';
+          
+          const actionsCell = document.createElement('td');
+          actionsCell.className = 'action-buttons';
+          
+          const viewBtn = document.createElement('button');
+          viewBtn.className = 'btn-small btn-view';
+          viewBtn.innerHTML = '<i class="fas fa-eye"></i>';
+          viewBtn.onclick = () => viewSong(song);
+          
+          const editBtn = document.createElement('button');
+          editBtn.className = 'btn-small btn-edit';
+          editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+          editBtn.onclick = () => editSong(song);
+          
+          const deleteBtn = document.createElement('button');
+          deleteBtn.className = 'btn-small btn-delete';
+          deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+          deleteBtn.onclick = () => deleteSong(song.id);
+          
+          actionsCell.appendChild(viewBtn);
+          actionsCell.appendChild(editBtn);
+          actionsCell.appendChild(deleteBtn);
+          
+          row.appendChild(titleCell);
+          row.appendChild(authorCell);
+          row.appendChild(categoryCell);
+          row.appendChild(keyCell);
+          row.appendChild(actionsCell);
+          
+          tableBody.appendChild(row);
+        });
+      } catch (error) {
+        showToast(`Error loading songs: ${error.message}`, 'error');
+      }
+    }
+
+    // Render attendance charts
+    function renderAttendanceCharts() {
+      // Get attendance data for the last 12 weeks
+      const today = new Date();
+      const twelveWeeksAgo = new Date(today);
+      twelveWeeksAgo.setDate(twelveWeeksAgo.getDate() - 84);
+      
+      supabase
+        .from('attendance')
+        .select('date, men, women, youth, children, visitors')
+        .gte('date', twelveWeeksAgo.toISOString().split('T')[0])
+        .order('date', { ascending: true })
+        .then(({ data, error }) => {
+          if (error) {
+            console.error('Error fetching attendance data:', error);
+            return;
+          }
+          
+          // Group data by week
+          const weeklyData = {};
+          data.forEach(record => {
+            const date = new Date(record.date);
+            const weekStart = new Date(date);
+            weekStart.setDate(date.getDate() - date.getDay());
+            const weekKey = weekStart.toISOString().split('T')[0];
+            
+            if (!weeklyData[weekKey]) {
+              weeklyData[weekKey] = {
+                labels: [],
+                men: [],
+                women: [],
+                youth: [],
+                children: [],
+                visitors: [],
+                total: []
+              };
+            }
+            
+            weeklyData[weekKey].labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+            weeklyData[weekKey].men.push(record.men || 0);
+            weeklyData[weekKey].women.push(record.women || 0);
+            weeklyData[weekKey].youth.push(record.youth || 0);
+            weeklyData[weekKey].children.push(record.children || 0);
+            weeklyData[weekKey].visitors.push(record.visitors || 0);
+            weeklyData[weekKey].total.push(
+              (record.men || 0) + (record.women || 0) + (record.youth || 0) + 
+              (record.children || 0) + (record.visitors || 0)
+            );
+          });
+          
+          // Calculate weekly averages
+          const weekLabels = [];
+          const avgMen = [];
+          const avgWomen = [];
+          const avgYouth = [];
+          const avgChildren = [];
+          const avgVisitors = [];
+          const avgTotal = [];
+          
+          Object.keys(weeklyData).sort().forEach(weekKey => {
+            const week = weeklyData[weekKey];
+            const weekStart = new Date(weekKey);
+            weekLabels.push(`Week of ${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`);
+            
+            avgMen.push(week.men.reduce((a, b) => a + b, 0) / week.men.length);
+            avgWomen.push(week.women.reduce((a, b) => a + b, 0) / week.women.length);
+            avgYouth.push(week.youth.reduce((a, b) => a + b, 0) / week.youth.length);
+            avgChildren.push(week.children.reduce((a, b) => a + b, 0) / week.children.length);
+            avgVisitors.push(week.visitors.reduce((a, b) => a + b, 0) / week.visitors.length);
+            avgTotal.push(week.total.reduce((a, b) => a + b, 0) / week.total.length);
+          });
+          
+          // Render trend chart
+          const trendCtx = document.getElementById('attendanceTrendChart');
+          if (trendCtx) {
+            new Chart(trendCtx, {
+              type: 'line',
+              data: {
+                labels: weekLabels,
+                datasets: [
+                  {
+                    label: 'Average Total Attendance',
+                    data: avgTotal,
+                    borderColor: '#4a6de5',
+                    backgroundColor: 'rgba(74, 109, 229, 0.1)',
+                    tension: 0.3,
+                    fill: true
+                  }
+                ]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  title: {
+                    display: true,
+                    text: 'Weekly Attendance Trend (Last 12 Weeks)'
+                  },
+                  legend: {
+                    position: 'bottom'
+                  }
+                },
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    title: {
+                      display: true,
+                      text: 'Average Attendance'
+                    }
+                  }
+                }
+              }
+            });
+          }
+          
+          // Render demographics chart
+          const demographicsCtx = document.getElementById('attendanceDemographicsChart');
+          if (demographicsCtx) {
+            new Chart(demographicsCtx, {
+              type: 'bar',
+              data: {
+                labels: weekLabels.slice(-4), // Last 4 weeks
+                datasets: [
+                  {
+                    label: 'Men',
+                    data: avgMen.slice(-4),
+                    backgroundColor: '#4a6de5'
+                  },
+                  {
+                    label: 'Women',
+                    data: avgWomen.slice(-4),
+                    backgroundColor: '#f85a5a'
+                  },
+                  {
+                    label: 'Youth',
+                    data: avgYouth.slice(-4),
+                    backgroundColor: '#4cd3c2'
+                  },
+                  {
+                    label: 'Children',
+                    data: avgChildren.slice(-4),
+                    backgroundColor: '#f57c00'
+                  },
+                  {
+                    label: 'Visitors',
+                    data: avgVisitors.slice(-4),
+                    backgroundColor: '#0288d1'
+                  }
+                ]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  title: {
+                    display: true,
+                    text: 'Attendance Demographics (Last 4 Weeks)'
+                  },
+                  legend: {
+                    position: 'bottom'
+                  }
+                },
+                scales: {
+                  x: {
+                    stacked: true
+                  },
+                  y: {
+                    stacked: true,
+                    beginAtZero: true,
+                    title: {
+                      display: true,
+                      text: 'Number of People'
+                    }
+                  }
+                }
+              }
+            });
+          }
+        });
+    }
+
+    // View functions
+    function viewSermon(sermon) {
+      const modalContent = document.getElementById('modalContent');
+      modalContent.innerHTML = `
+        <h3 style="margin-bottom: 1rem; color: var(--primary-dark);">${sermon.title}</h3>
+        <p><strong>Preacher:</strong> ${sermon.preacher}</p>
+        <p><strong>Date:</strong> ${new Date(sermon.date).toLocaleDateString()}</p>
+        <p><strong>Description:</strong> ${sermon.description}</p>
+        ${sermon.media_url ? `<p><strong>Media:</strong> <a href="${sermon.media_url}" target="_blank">View Media</a></p>` : ''}
+      `;
+      document.getElementById('viewModal').style.display = 'flex';
+    }
+
+    function viewFellowship(fellowship) {
+      const modalContent = document.getElementById('modalContent');
+      modalContent.innerHTML = `
+        <h3 style="margin-bottom: 1rem; color: var(--primary-dark);">${fellowship.name}</h3>
+        <p><strong>Meeting Day:</strong> ${fellowship.day}</p>
+        <p><strong>Time:</strong> ${fellowship.time}</p>
+        <p><strong>Location:</strong> ${fellowship.location}</p>
+        <p><strong>Leader:</strong> ${fellowship.leader}</p>
+        <p><strong>Description:</strong> ${fellowship.description}</p>
+      `;
+      document.getElementById('viewModal').style.display = 'flex';
+    }
+
+    function viewEvent(event) {
+      const modalContent = document.getElementById('modalContent');
+      modalContent.innerHTML = `
+        <h3 style="margin-bottom: 1rem; color: var(--primary-dark);">${event.name}</h3>
+        <p><strong>Date:</strong> ${new Date(event.date).toLocaleDateString()}</p>
+        <p><strong>Time:</strong> ${event.start_time}${event.end_time ? ' - ' + event.end_time : ''}</p>
+        <p><strong>Type:</strong> ${event.type.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}</p>
+        <p><strong>Description:</strong> ${event.description}</p>
+      `;
+      document.getElementById('viewModal').style.display = 'flex';
+    }
+
+    function viewMedia(mediaItem) {
+      const modalContent = document.getElementById('modalContent');
+      const mediaElement = mediaItem.type === 'image' 
+        ? `<img src="${mediaItem.file_url}" style="max-width: 100%; border-radius: 8px;">`
+        : `<video src="${mediaItem.file_url}" controls style="max-width: 100%; border-radius: 8px;"></video>`;
+      
+      modalContent.innerHTML = `
+        <h3 style="margin-bottom: 1rem; color: var(--primary-dark);">${mediaItem.title}</h3>
+        <p><strong>Category:</strong> ${mediaItem.category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}</p>
+        <div style="margin: 1rem 0;">
+          ${mediaElement}
+        </div>
+        <p><a href="${mediaItem.file_url}" target="_blank" style="color: var(--primary);">Open in new tab</a></p>
+      `;
+      document.getElementById('viewModal').style.display = 'flex';
+    }
+
+    function viewAttendance(record) {
+      const modalContent = document.getElementById('modalContent');
+      const total = (record.men || 0) + (record.women || 0) + (record.youth || 0) + 
+                   (record.children || 0) + (record.visitors || 0);
+      
+      modalContent.innerHTML = `
+        <h3 style="margin-bottom: 1rem; color: var(--primary-dark);">Attendance Record</h3>
+        <p><strong>Date:</strong> ${new Date(record.date).toLocaleDateString()}</p>
+        <p><strong>Service Type:</strong> ${record.service_type.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}</p>
+        <div style="margin: 1rem 0;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+            <span>Men:</span>
+            <span>${record.men || 0}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+            <span>Women:</span>
+            <span>${record.women || 0}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+            <span>Youth:</span>
+            <span>${record.youth || 0}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+            <span>Children:</span>
+            <span>${record.children || 0}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+            <span>Visitors:</span>
+            <span>${record.visitors || 0}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-weight: bold; margin-top: 1rem; padding-top: 0.5rem; border-top: 1px solid #eee;">
+            <span>Total:</span>
+            <span>${total}</span>
+          </div>
+        </div>
+      `;
+      document.getElementById('viewModal').style.display = 'flex';
+    }
+
+    function viewYouth(member) {
+      const modalContent = document.getElementById('modalContent');
+      modalContent.innerHTML = `
+        <h3 style="margin-bottom: 1rem; color: var(--primary-dark);">${member.name}</h3>
+        <p><strong>Age:</strong> ${member.age}</p>
+        <p><strong>Gender:</strong> ${member.gender.charAt(0).toUpperCase() + member.gender.slice(1)}</p>
+        <p><strong>Phone:</strong> ${member.phone || 'N/A'}</p>
+        <p><strong>School/College/Work:</strong> ${member.school || 'N/A'}</p>
+        <p><strong>Interests/Talents:</strong> ${member.interests || 'N/A'}</p>
+      `;
+      document.getElementById('viewModal').style.display = 'flex';
+    }
+
+    function viewElder(elder) {
+      const modalContent = document.getElementById('modalContent');
+      modalContent.innerHTML = `
+        <h3 style="margin-bottom: 1rem; color: var(--primary-dark);">${elder.name}</h3>
+        <p><strong>Position:</strong> ${elder.position}</p>
+        <p><strong>Phone:</strong> ${elder.phone || 'N/A'}</p>
+        <p><strong>Email:</strong> ${elder.email || 'N/A'}</p>
+        <p><strong>Responsibilities:</strong> ${elder.responsibilities || 'N/A'}</p>
+        <p><strong>Bio:</strong> ${elder.bio || 'N/A'}</p>
+      `;
+      document.getElementById('viewModal').style.display = 'flex';
+    }
+
+    function viewSong(song) {
+      const modalContent = document.getElementById('modalContent');
+      modalContent.innerHTML = `
+        <h3 style="margin-bottom: 1rem; color: var(--primary-dark);">${song.title}</h3>
+        <p><strong>Author/Artist:</strong> ${song.author || 'N/A'}</p>
+        <p><strong>Category:</strong> ${song.category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}</p>
+        <p><strong>Key:</strong> ${song.key || 'N/A'}</p>
+        <div style="margin-top: 1rem; padding: 1rem; background: #f9f9f9; border-radius: 8px; white-space: pre-line;">
+          ${song.lyrics}
+        </div>
+      `;
+      document.getElementById('viewModal').style.display = 'flex';
+    }
+
+    // Edit functions
+    function editSermon(sermon) {
+      // Switch to sermon form tab
+      document.querySelector('[data-content="sermon-form"]').click();
+      
+      // Populate form with sermon data
+      document.getElementById('sermonTitle').value = sermon.title;
+      document.getElementById('sermonPreacher').value = sermon.preacher;
+      document.getElementById('sermonDate').value = sermon.date;
+      document.getElementById('sermonDesc').value = sermon.description;
+      document.getElementById('sermonMedia').value = sermon.media_url || '';
+      
+      // Change button text
+      const btnText = document.getElementById('sermonBtnText');
+      btnText.textContent = 'Update Sermon';
+      
+      // Change button onclick to update function
+      document.getElementById('sermonBtn').onclick = () => updateSermon(sermon.id);
+      
+      showToast('Sermon loaded for editing', 'info');
+    }
+
+    function editFellowship(fellowship) {
+      // Switch to fellowship form tab
+      document.querySelector('[data-content="fellowship-form"]').click();
+      
+      // Populate form with fellowship data
+      document.getElementById('fellowshipName').value = fellowship.name;
+      document.getElementById('fellowshipDay').value = fellowship.day;
+      document.getElementById('fellowshipTime').value = fellowship.time;
+      document.getElementById('fellowshipLocation').value = fellowship.location;
+      document.getElementById('fellowshipLeader').value = fellowship.leader;
+      document.getElementById('fellowshipDesc').value = fellowship.description;
+      
+      // Change button text
+      const btnText = document.getElementById('fellowshipBtnText');
+      btnText.textContent = 'Update Fellowship';
+      
+      // Change button onclick to update function
+      document.getElementById('fellowshipBtn').onclick = () => updateFellowship(fellowship.id);
+      
+      showToast('Fellowship loaded for editing', 'info');
+    }
+
+    function editEvent(event) {
+      // Switch to event form tab
+      document.querySelector('[data-content="event-form"]').click();
+      
+      // Populate form with event data
+      document.getElementById('eventName').value = event.name;
+      document.getElementById('eventDate').value = event.date;
+      document.getElementById('eventStartTime').value = event.start_time;
+      document.getElementById('eventEndTime').value = event.end_time || '';
+      document.getElementById('eventDesc').value = event.description;
+      document.getElementById('eventType').value = event.type;
+      
+      // Change button text
+      const btnText = document.getElementById('eventBtnText');
+      btnText.textContent = 'Update Event';
+      
+      // Change button onclick to update function
+      document.getElementById('eventBtn').onclick = () => updateEvent(event.id);
+      
+      showToast('Event loaded for editing', 'info');
+    }
+
+    function editAttendance(record) {
+      // Switch to attendance form tab
+      document.querySelector('[data-content="attendance-form"]').click();
+      
+      // Populate form with attendance data
+      document.getElementById('attendanceDate').value = record.date;
+      document.getElementById('serviceType').value = record.service_type;
+      document.getElementById('menCount').value = record.men || 0;
+      document.getElementById('womenCount').value = record.women || 0;
+      document.getElementById('youthCount').value = record.youth || 0;
+      document.getElementById('childrenCount').value = record.children || 0;
+      document.getElementById('visitorsCount').value = record.visitors || 0;
+      
+      // Change button text
+      const btnText = document.getElementById('attendanceBtnText');
+      btnText.textContent = 'Update Attendance';
+      
+      // Change button onclick to update function
+      document.getElementById('attendanceBtn').onclick = () => updateAttendance(record.id);
+      
+      showToast('Attendance record loaded for editing', 'info');
+    }
+
+    function editYouth(member) {
+      // Switch to youth form tab
+      document.querySelector('[data-content="youth-form"]').click();
+      
+      // Populate form with youth data
+      document.getElementById('youthName').value = member.name;
+      document.getElementById('youthAge').value = member.age;
+      document.getElementById('youthGender').value = member.gender;
+      document.getElementById('youthPhone').value = member.phone || '';
+      document.getElementById('youthSchool').value = member.school || '';
+      document.getElementById('youthInterests').value = member.interests || '';
+      
+      // Change button text
+      const btnText = document.getElementById('youthBtnText');
+      btnText.textContent = 'Update Youth Member';
+      
+      // Change button onclick to update function
+      document.getElementById('youthBtn').onclick = () => updateYouth(member.id);
+      
+      showToast('Youth member loaded for editing', 'info');
+    }
+
+    function editElder(elder) {
+      // Switch to elder form tab
+      document.querySelector('[data-content="elder-form"]').click();
+      
+      // Populate form with elder data
+      document.getElementById('elderName').value = elder.name;
+      document.getElementById('elderPosition').value = elder.position;
+      document.getElementById('elderPhone').value = elder.phone || '';
+      document.getElementById('elderEmail').value = elder.email || '';
+      document.getElementById('elderResponsibilities').value = elder.responsibilities || '';
+      document.getElementById('elderBio').value = elder.bio || '';
+      
+      // Change button text
+      const btnText = document.getElementById('elderBtnText');
+      btnText.textContent = 'Update Elder';
+      
+      // Change button onclick to update function
+      document.getElementById('elderBtn').onclick = () => updateElder(elder.id);
+      
+      showToast('Elder loaded for editing', 'info');
+    }
+
+    function editSong(song) {
+      // Switch to song form tab
+      document.querySelector('[data-content="song-form"]').click();
+      
+      // Populate form with song data
+      document.getElementById('songTitle').value = song.title;
+      document.getElementById('songAuthor').value = song.author || '';
+      document.getElementById('songCategory').value = song.category;
+      document.getElementById('songKey').value = song.key || '';
+      document.getElementById('songLyrics').value = song.lyrics;
+      
+      // Change button text
+      const btnText = document.getElementById('songBtnText');
+      btnText.textContent = 'Update Song';
+      
+      // Change button onclick to update function
+      document.getElementById('songBtn').onclick = () => updateSong(song.id);
+      
+      showToast('Song loaded for editing', 'info');
+    }
+
+    // Update functions
+    async function updateSermon(id) {
       const title = document.getElementById('sermonTitle').value.trim();
+      const preacher = document.getElementById('sermonPreacher').value.trim();
+      const date = document.getElementById('sermonDate').value;
       const desc = document.getElementById('sermonDesc').value.trim();
       const mediaUrl = document.getElementById('sermonMedia').value.trim();
-
-      if (!title || !desc) {
+      
+      const btnText = document.getElementById('sermonBtnText');
+      const btnSpinner = document.getElementById('sermonBtnSpinner');
+      
+      if (!title || !preacher || !date || !desc) {
         showToast('Please fill in all required fields', 'error');
         return;
       }
+      
+      // Show loading state
+      btnText.style.display = 'none';
+      btnSpinner.style.display = 'inline-block';
+      
+      try {
+        // Update sermon in Supabase
+        const { data, error } = await supabase
+          .from('sermons')
+          .update({
+            title, 
+            preacher, 
+            date, 
+            description: desc, 
+            media_url: mediaUrl || null 
+          })
+          .eq('id', id);
+          
+        if (error) throw error;
+        
+        showToast(`Sermon "${title}" updated successfully`, 'success');
+        document.getElementById('sermonForm').reset();
+        
+        // Reset button
+        btnText.textContent = 'Post Sermon';
+        document.getElementById('sermonBtn').onclick = postSermon;
+        
+        // Reload sermons
+        loadSermons();
+      } catch (error) {
+        showToast(`Error: ${error.message}`, 'error');
+      } finally {
+        // Reset button state
+        btnText.style.display = 'inline';
+        btnSpinner.style.display = 'none';
+      }
+    }
 
-      showToast(`Sermon "${title}" posted successfully`, 'success');
-      document.getElementById('sermonForm').reset();
+    async function updateFellowship(id) {
+      const name = document.getElementById('fellowshipName').value.trim();
+      const day = document.getElementById('fellowshipDay').value;
+      const time = document.getElementById('fellowshipTime').value;
+      const location = document.getElementById('fellowshipLocation').value.trim();
+      const leader = document.getElementById('fellowshipLeader').value.trim();
+      const desc = document.getElementById('fellowshipDesc').value.trim();
+      
+      const btnText = document.getElementById('fellowshipBtnText');
+      const btnSpinner = document.getElementById('fellowshipBtnSpinner');
+      
+      if (!name || !day || !time || !location || !leader || !desc) {
+        showToast('Please fill in all required fields', 'error');
+        return;
+      }
+      
+      // Show loading state
+      btnText.style.display = 'none';
+      btnSpinner.style.display = 'inline-block';
+      
+      try {
+        // Update fellowship in Supabase
+        const { data, error } = await supabase
+          .from('fellowships')
+          .update({
+            name, 
+            day, 
+            time, 
+            location, 
+            leader, 
+            description: desc 
+          })
+          .eq('id', id);
+          
+        if (error) throw error;
+        
+        showToast(`${name} fellowship updated successfully`, 'success');
+        document.getElementById('fellowshipForm').reset();
+        
+        // Reset button
+        btnText.textContent = 'Post Fellowship';
+        document.getElementById('fellowshipBtn').onclick = postFellowship;
+        
+        // Reload fellowships
+        loadFellowships();
+      } catch (error) {
+        showToast(`Error: ${error.message}`, 'error');
+      } finally {
+        // Reset button state
+        btnText.style.display = 'inline';
+        btnSpinner.style.display = 'none';
+      }
+    }
+
+    async function updateEvent(id) {
+      const name = document.getElementById('eventName').value.trim();
+      const date = document.getElementById('eventDate').value;
+      const startTime = document.getElementById('eventStartTime').value;
+      const endTime = document.getElementById('eventEndTime').value;
+      const desc = document.getElementById('eventDesc').value.trim();
+      const type = document.getElementById('eventType').value;
+      
+      const btnText = document.getElementById('eventBtnText');
+      const btnSpinner = document.getElementById('eventBtnSpinner');
+      
+      if (!name || !date || !startTime || !desc || !type) {
+        showToast('Please fill in all required fields', 'error');
+        return;
+      }
+      
+      // Show loading state
+      btnText.style.display = 'none';
+      btnSpinner.style.display = 'inline-block';
+      
+      try {
+        // Update event in Supabase
+        const { data, error } = await supabase
+          .from('events')
+          .update({
+            name, 
+            date, 
+            start_time: startTime, 
+            end_time: endTime || null, 
+            description: desc,
+            type
+          })
+          .eq('id', id);
+          
+        if (error) throw error;
+        
+        showToast(`Event "${name}" updated successfully`, 'success');
+        document.getElementById('eventForm').reset();
+        document.getElementById('eventPreview').innerHTML = '';
+        
+        // Reset button
+        btnText.textContent = 'Post Event';
+        document.getElementById('eventBtn').onclick = postEvent;
+        
+        // Reload events
+        loadEvents();
+      } catch (error) {
+        showToast(`Error: ${error.message}`, 'error');
+      } finally {
+        // Reset button state
+        btnText.style.display = 'inline';
+        btnSpinner.style.display = 'none';
+      }
+    }
+
+    async function updateAttendance(id) {
+      const date = document.getElementById('attendanceDate').value;
+      const serviceType = document.getElementById('serviceType').value;
+      const men = parseInt(document.getElementById('menCount').value) || 0;
+      const women = parseInt(document.getElementById('womenCount').value) || 0;
+      const youth = parseInt(document.getElementById('youthCount').value) || 0;
+      const children = parseInt(document.getElementById('childrenCount').value) || 0;
+      const visitors = parseInt(document.getElementById('visitorsCount').value) || 0;
+      
+      const btnText = document.getElementById('attendanceBtnText');
+      const btnSpinner = document.getElementById('attendanceBtnSpinner');
+      
+      if (!date || !serviceType) {
+        showToast('Please fill in all required fields', 'error');
+        return;
+      }
+      
+      // Show loading state
+      btnText.style.display = 'none';
+      btnSpinner.style.display = 'inline-block';
+      
+      try {
+        // Update attendance in Supabase
+        const { data, error } = await supabase
+          .from('attendance')
+          .update({
+            date, 
+            service_type: serviceType, 
+            men, 
+            women, 
+            youth, 
+            children, 
+            visitors
+          })
+          .eq('id', id);
+          
+        if (error) throw error;
+        
+        showToast('Attendance record updated successfully', 'success');
+        document.getElementById('attendanceForm').reset();
+        
+        // Reset button
+        btnText.textContent = 'Record Attendance';
+        document.getElementById('attendanceBtn').onclick = recordAttendance;
+        
+        // Reload attendance
+        loadAttendance();
+      } catch (error) {
+        showToast(`Error: ${error.message}`, 'error');
+      } finally {
+        // Reset button state
+        btnText.style.display = 'inline';
+        btnSpinner.style.display = 'none';
+      }
+    }
+
+    async function updateYouth(id) {
+      const name = document.getElementById('youthName').value.trim();
+      const age = parseInt(document.getElementById('youthAge').value);
+      const gender = document.getElementById('youthGender').value;
+      const phone = document.getElementById('youthPhone').value.trim();
+      const school = document.getElementById('youthSchool').value.trim();
+      const interests = document.getElementById('youthInterests').value.trim();
+      
+      const btnText = document.getElementById('youthBtnText');
+      const btnSpinner = document.getElementById('youthBtnSpinner');
+      
+      if (!name || !age || !gender) {
+        showToast('Please fill in all required fields', 'error');
+        return;
+      }
+      
+      // Show loading state
+      btnText.style.display = 'none';
+      btnSpinner.style.display = 'inline-block';
+      
+      try {
+        // Update youth in Supabase
+        const { data, error } = await supabase
+          .from('youth')
+          .update({
+            name, 
+            age, 
+            gender, 
+            phone: phone || null, 
+            school: school || null, 
+            interests: interests || null
+          })
+          .eq('id', id);
+          
+        if (error) throw error;
+        
+        showToast(`Youth member "${name}" updated successfully`, 'success');
+        document.getElementById('youthForm').reset();
+        
+        // Reset button
+        btnText.textContent = 'Add Youth Member';
+        document.getElementById('youthBtn').onclick = addYouth;
+        
+        // Reload youth
+        loadYouth();
+      } catch (error) {
+        showToast(`Error: ${error.message}`, 'error');
+      } finally {
+        // Reset button state
+        btnText.style.display = 'inline';
+        btnSpinner.style.display = 'none';
+      }
+    }
+
+    async function updateElder(id) {
+      const name = document.getElementById('elderName').value.trim();
+      const position = document.getElementById('elderPosition').value.trim();
+      const phone = document.getElementById('elderPhone').value.trim();
+      const email = document.getElementById('elderEmail').value.trim();
+      const responsibilities = document.getElementById('elderResponsibilities').value.trim();
+      const bio = document.getElementById('elderBio').value.trim();
+      
+      const btnText = document.getElementById('elderBtnText');
+      const btnSpinner = document.getElementById('elderBtnSpinner');
+      
+      if (!name || !position) {
+        showToast('Please fill in all required fields', 'error');
+        return;
+      }
+      
+      // Show loading state
+      btnText.style.display = 'none';
+      btnSpinner.style.display = 'inline-block';
+      
+      try {
+        // Update elder in Supabase
+        const { data, error } = await supabase
+          .from('elders')
+          .update({
+            name, 
+            position, 
+            phone: phone || null, 
+            email: email || null, 
+            responsibilities: responsibilities || null,
+            bio: bio || null
+          })
+          .eq('id', id);
+          
+        if (error) throw error;
+        
+        showToast(`Elder "${name}" updated successfully`, 'success');
+        document.getElementById('elderForm').reset();
+        
+        // Reset button
+        btnText.textContent = 'Add Elder';
+        document.getElementById('elderBtn').onclick = addElder;
+        
+        // Reload elders
+        loadElders();
+      } catch (error) {
+        showToast(`Error: ${error.message}`, 'error');
+      } finally {
+        // Reset button state
+        btnText.style.display = 'inline';
+        btnSpinner.style.display = 'none';
+      }
+    }
+
+    async function updateSong(id) {
+      const title = document.getElementById('songTitle').value.trim();
+      const author = document.getElementById('songAuthor').value.trim();
+      const category = document.getElementById('songCategory').value;
+      const key = document.getElementById('songKey').value.trim();
+      const lyrics = document.getElementById('songLyrics').value.trim();
+      
+      const btnText = document.getElementById('songBtnText');
+      const btnSpinner = document.getElementById('songBtnSpinner');
+      
+      if (!title || !category || !lyrics) {
+        showToast('Please fill in all required fields', 'error');
+        return;
+      }
+      
+      // Show loading state
+      btnText.style.display = 'none';
+      btnSpinner.style.display = 'inline-block';
+      
+      try {
+        // Update song in Supabase
+        const { data, error } = await supabase
+          .from('songs')
+          .update({
+            title, 
+            author: author || null, 
+            category, 
+            key: key || null,
+            lyrics
+          })
+          .eq('id', id);
+          
+        if (error) throw error;
+        
+        showToast(`Song "${title}" updated successfully`, 'success');
+        document.getElementById('songForm').reset();
+        
+        // Reset button
+        btnText.textContent = 'Add Song';
+        document.getElementById('songBtn').onclick = addSong;
+        
+        // Reload songs
+        loadSongs();
+      } catch (error) {
+        showToast(`Error: ${error.message}`, 'error');
+      } finally {
+        // Reset button state
+        btnText.style.display = 'inline';
+        btnSpinner.style.display = 'none';
+      }
+    }
+
+    // Delete functions
+    async function deleteSermon(id) {
+      if (!confirm('Are you sure you want to delete this sermon?')) return;
+      
+      try {
+        const { error } = await supabase
+          .from('sermons')
+          .delete()
+          .eq('id', id);
+          
+        if (error) throw error;
+        
+        showToast('Sermon deleted successfully', 'success');
+        loadSermons();
+      } catch (error) {
+        showToast(`Error: ${error.message}`, 'error');
+      }
+    }
+
+    async function deleteFellowship(id) {
+      if (!confirm('Are you sure you want to delete this fellowship?')) return;
+      
+      try {
+        const { error } = await supabase
+          .from('fellowships')
+          .delete()
+          .eq('id', id);
+          
+        if (error) throw error;
+        
+        showToast('Fellowship deleted successfully', 'success');
+        loadFellowships();
+      } catch (error) {
+        showToast(`Error: ${error.message}`, 'error');
+      }
+    }
+
+    async function deleteEvent(id) {
+      if (!confirm('Are you sure you want to delete this event?')) return;
+      
+      try {
+        const { error } = await supabase
+          .from('events')
+          .delete()
+          .eq('id', id);
+          
+        if (error) throw error;
+        
+        showToast('Event deleted successfully', 'success');
+        loadEvents();
+      } catch (error) {
+        showToast(`Error: ${error.message}`, 'error');
+      }
+    }
+
+    async function deleteMedia(id) {
+      if (!confirm('Are you sure you want to delete this media file?')) return;
+      
+      try {
+        // First, get the media file URL to delete from storage
+        const { data: media, error: fetchError } = await supabase
+          .from('media')
+          .select('file_url')
+          .eq('id', id)
+          .single();
+          
+        if (fetchError) throw fetchError;
+        
+        // Extract filename from URL
+        const urlParts = media.file_url.split('/');
+        const fileName = urlParts[urlParts.length - 1];
+        
+        // Delete from storage
+        const { error: storageError } = await supabase.storage
+          .from('media')
+          .remove([fileName]);
+          
+        if (storageError) throw storageError;
+        
+        // Delete from database
+        const { error: deleteError } = await supabase
+          .from('media')
+          .delete()
+          .eq('id', id);
+          
+        if (deleteError) throw deleteError;
+        
+        showToast('Media file deleted successfully', 'success');
+        loadMedia();
+      } catch (error) {
+        showToast(`Error: ${error.message}`, 'error');
+      }
+    }
+
+    async function deleteAttendance(id) {
+      if (!confirm('Are you sure you want to delete this attendance record?')) return;
+      
+      try {
+        const { error } = await supabase
+          .from('attendance')
+          .delete()
+          .eq('id', id);
+          
+        if (error) throw error;
+        
+        showToast('Attendance record deleted successfully', 'success');
+        loadAttendance();
+      } catch (error) {
+        showToast(`Error: ${error.message}`, 'error');
+      }
+    }
+
+    async function deleteYouth(id) {
+      if (!confirm('Are you sure you want to delete this youth member?')) return;
+      
+      try {
+        const { error } = await supabase
+          .from('youth')
+          .delete()
+          .eq('id', id);
+          
+        if (error) throw error;
+        
+        showToast('Youth member deleted successfully', 'success');
+        loadYouth();
+      } catch (error) {
+        showToast(`Error: ${error.message}`, 'error');
+      }
+    }
+
+    async function deleteElder(id) {
+      if (!confirm('Are you sure you want to delete this elder?')) return;
+      
+      try {
+        const { error } = await supabase
+          .from('elders')
+          .delete()
+          .eq('id', id);
+          
+        if (error) throw error;
+        
+        showToast('Elder deleted successfully', 'success');
+        loadElders();
+      } catch (error) {
+        showToast(`Error: ${error.message}`, 'error');
+      }
+    }
+
+    async function deleteSong(id) {
+      if (!confirm('Are you sure you want to delete this song?')) return;
+      
+      try {
+        const { error } = await supabase
+          .from('songs')
+          .delete()
+          .eq('id', id);
+          
+        if (error) throw error;
+        
+        showToast('Song deleted successfully', 'success');
+        loadSongs();
+      } catch (error) {
+        showToast(`Error: ${error.message}`, 'error');
+      }
+    }
+
+    // Post sermon
+    async function postSermon() {
+      const title = document.getElementById('sermonTitle').value.trim();
+      const preacher = document.getElementById('sermonPreacher').value.trim();
+      const date = document.getElementById('sermonDate').value;
+      const desc = document.getElementById('sermonDesc').value.trim();
+      const mediaUrl = document.getElementById('sermonMedia').value.trim();
+      
+      const btnText = document.getElementById('sermonBtnText');
+      const btnSpinner = document.getElementById('sermonBtnSpinner');
+      
+      if (!title || !preacher || !date || !desc) {
+        showToast('Please fill in all required fields', 'error');
+        return;
+      }
+      
+      // Show loading state
+      btnText.style.display = 'none';
+      btnSpinner.style.display = 'inline-block';
+      
+      try {
+        // Insert sermon into Supabase
+        const { data, error } = await supabase
+          .from('sermons')
+          .insert([
+            { 
+              title, 
+              preacher, 
+              date, 
+              description: desc, 
+              media_url: mediaUrl || null 
+            }
+          ]);
+          
+        if (error) throw error;
+        
+        showToast(`Sermon "${title}" posted successfully`, 'success');
+        document.getElementById('sermonForm').reset();
+        
+        // Reset button if it was in update mode
+        if (btnText.textContent === 'Update Sermon') {
+          btnText.textContent = 'Post Sermon';
+          document.getElementById('sermonBtn').onclick = postSermon;
+        }
+        
+        // Reload sermons
+        loadSermons();
+      } catch (error) {
+        showToast(`Error: ${error.message}`, 'error');
+      } finally {
+        // Reset button state
+        btnText.style.display = 'inline';
+        btnSpinner.style.display = 'none';
+      }
     }
 
     // Post fellowship
-    function postFellowship() {
+    async function postFellowship() {
       const name = document.getElementById('fellowshipName').value.trim();
+      const day = document.getElementById('fellowshipDay').value;
+      const time = document.getElementById('fellowshipTime').value;
       const location = document.getElementById('fellowshipLocation').value.trim();
-      const time = document.getElementById('fellowshipTime').value.trim();
       const leader = document.getElementById('fellowshipLeader').value.trim();
       const desc = document.getElementById('fellowshipDesc').value.trim();
-
-      if (!name || !location || !time || !leader || !desc) {
+      
+      const btnText = document.getElementById('fellowshipBtnText');
+      const btnSpinner = document.getElementById('fellowshipBtnSpinner');
+      
+      if (!name || !day || !time || !location || !leader || !desc) {
         showToast('Please fill in all required fields', 'error');
         return;
       }
-
-      showToast(`${name} fellowship added`, 'success');
-      document.getElementById('fellowshipForm').reset();
+      
+      // Show loading state
+      btnText.style.display = 'none';
+      btnSpinner.style.display = 'inline-block';
+      
+      try {
+        // Insert fellowship into Supabase
+        const { data, error } = await supabase
+          .from('fellowships')
+          .insert([
+            { 
+              name, 
+              day, 
+              time, 
+              location, 
+              leader, 
+              description: desc 
+            }
+          ]);
+          
+        if (error) throw error;
+        
+        showToast(`${name} fellowship added successfully`, 'success');
+        document.getElementById('fellowshipForm').reset();
+        
+        // Reset button if it was in update mode
+        if (btnText.textContent === 'Update Fellowship') {
+          btnText.textContent = 'Post Fellowship';
+          document.getElementById('fellowshipBtn').onclick = postFellowship;
+        }
+        
+        // Reload fellowships
+        loadFellowships();
+      } catch (error) {
+        showToast(`Error: ${error.message}`, 'error');
+      } finally {
+        // Reset button state
+        btnText.style.display = 'inline';
+        btnSpinner.style.display = 'none';
+      }
     }
 
     // Post event
-    function postEvent() {
+    async function postEvent() {
       const name = document.getElementById('eventName').value.trim();
       const date = document.getElementById('eventDate').value;
+      const startTime = document.getElementById('eventStartTime').value;
+      const endTime = document.getElementById('eventEndTime').value;
       const desc = document.getElementById('eventDesc').value.trim();
+      const type = document.getElementById('eventType').value;
       const files = document.getElementById('eventMedia').files;
-
-      if (!name || !date) {
+      
+      const btnText = document.getElementById('eventBtnText');
+      const btnSpinner = document.getElementById('eventBtnSpinner');
+      
+      if (!name || !date || !startTime || !desc || !type) {
         showToast('Please fill in all required fields', 'error');
         return;
       }
-
-      showToast(`Event "${name}" added for ${date}`, 'success');
-      document.getElementById('eventForm').reset();
-      document.getElementById('eventPreview').innerHTML = '';
+      
+      // Show loading state
+      btnText.style.display = 'none';
+      btnSpinner.style.display = 'inline-block';
+      
+      try {
+        // Insert event into Supabase
+        const { data, error } = await supabase
+          .from('events')
+          .insert([
+            { 
+              name, 
+              date, 
+              start_time: startTime, 
+              end_time: endTime || null, 
+              description: desc,
+              type
+            }
+          ]);
+          
+        if (error) throw error;
+        
+        showToast(`Event "${name}" added successfully`, 'success');
+        document.getElementById('eventForm').reset();
+        document.getElementById('eventPreview').innerHTML = '';
+        
+        // Reset button if it was in update mode
+        if (btnText.textContent === 'Update Event') {
+          btnText.textContent = 'Post Event';
+          document.getElementById('eventBtn').onclick = postEvent;
+        }
+        
+        // Reload events
+        loadEvents();
+      } catch (error) {
+        showToast(`Error: ${error.message}`, 'error');
+      } finally {
+        // Reset button state
+        btnText.style.display = 'inline';
+        btnSpinner.style.display = 'none';
+      }
     }
 
     // Upload media
-    function uploadMedia() {
+    async function uploadMedia() {
       const title = document.getElementById('mediaTitle').value.trim();
+      const category = document.getElementById('mediaCategory').value;
       const files = document.getElementById('mediaFile').files;
-
-      if (!title || files.length === 0) {
+      
+      const btnText = document.getElementById('mediaBtnText');
+      const btnSpinner = document.getElementById('mediaBtnSpinner');
+      
+      if (!title || !category || files.length === 0) {
         showToast('Please fill in all required fields and select files', 'error');
         return;
       }
-
-      showToast(`${files.length} media item${files.length > 1 ? 's' : ''} uploaded`, 'success');
-      document.getElementById('mediaForm').reset();
-      document.getElementById('mediaPreview').innerHTML = '';
+      
+      // Show loading state
+      btnText.style.display = 'none';
+      btnSpinner.style.display = 'inline-block';
+      
+      try {
+        // Upload files to Supabase storage
+        const fileUrls = [];
+        
+        for (const file of files) {
+          const fileName = `${Date.now()}_${file.name}`;
+          const { data, error } = await supabase.storage
+            .from('media')
+            .upload(fileName, file);
+            
+          if (error) throw error;
+          
+          // Get public URL
+          const { data: publicUrlData } = supabase.storage
+            .from('media')
+            .getPublicUrl(fileName);
+            
+          fileUrls.push(publicUrlData.publicUrl);
+        }
+        
+        // Insert media records into Supabase
+        const mediaRecords = fileUrls.map(url => ({
+          title,
+          category,
+          file_url: url,
+          type: files[0].type.startsWith('image') ? 'image' : 'video'
+        }));
+        
+        const { data: insertData, error: insertError } = await supabase
+          .from('media')
+          .insert(mediaRecords);
+          
+        if (insertError) throw insertError;
+        
+        showToast(`${files.length} media item${files.length > 1 ? 's' : ''} uploaded successfully`, 'success');
+        document.getElementById('mediaForm').reset();
+        document.getElementById('mediaPreview').innerHTML = '';
+        
+        // Reload media
+        loadMedia();
+      } catch (error) {
+        showToast(`Error: ${error.message}`, 'error');
+      } finally {
+        // Reset button state
+        btnText.style.display = 'inline';
+        btnSpinner.style.display = 'none';
+      }
     }
 
-    // Logout
-    function logout() {
-      showToast('Logged out successfully', 'success');
-      setTimeout(() => window.location.href = 'index.html', 1000);
+    // Record attendance
+    async function recordAttendance() {
+      const date = document.getElementById('attendanceDate').value;
+      const serviceType = document.getElementById('serviceType').value;
+      const men = parseInt(document.getElementById('menCount').value) || 0;
+      const women = parseInt(document.getElementById('womenCount').value) || 0;
+      const youth = parseInt(document.getElementById('youthCount').value) || 0;
+      const children = parseInt(document.getElementById('childrenCount').value) || 0;
+      const visitors = parseInt(document.getElementById('visitorsCount').value) || 0;
+      
+      const btnText = document.getElementById('attendanceBtnText');
+      const btnSpinner = document.getElementById('attendanceBtnSpinner');
+      
+      if (!date || !serviceType) {
+        showToast('Please fill in all required fields', 'error');
+        return;
+      }
+      
+      // Show loading state
+      btnText.style.display = 'none';
+      btnSpinner.style.display = 'inline-block';
+      
+      try {
+        // Insert attendance into Supabase
+        const { data, error } = await supabase
+          .from('attendance')
+          .insert([
+            { 
+              date, 
+              service_type: serviceType, 
+              men, 
+              women, 
+              youth, 
+              children, 
+              visitors
+            }
+          ]);
+          
+        if (error) throw error;
+        
+        const total = men + women + youth + children + visitors;
+        showToast(`Attendance recorded successfully: ${total} people`, 'success');
+        document.getElementById('attendanceForm').reset();
+        
+        // Reset button if it was in update mode
+        if (btnText.textContent === 'Update Attendance') {
+          btnText.textContent = 'Record Attendance';
+          document.getElementById('attendanceBtn').onclick = recordAttendance;
+        }
+        
+        // Reload attendance
+        loadAttendance();
+      } catch (error) {
+        showToast(`Error: ${error.message}`, 'error');
+      } finally {
+        // Reset button state
+        btnText.style.display = 'inline';
+        btnSpinner.style.display = 'none';
+      }
     }
+
+    // Add youth
+    async function addYouth() {
+      const name = document.getElementById('youthName').value.trim();
+      const age = parseInt(document.getElementById('youthAge').value);
+      const gender = document.getElementById('youthGender').value;
+      const phone = document.getElementById('youthPhone').value.trim();
+      const school = document.getElementById('youthSchool').value.trim();
+      const interests = document.getElementById('youthInterests').value.trim();
+      
+      const btnText = document.getElementById('youthBtnText');
+      const btnSpinner = document.getElementById('youthBtnSpinner');
+      
+      if (!name || !age || !gender) {
+        showToast('Please fill in all required fields', 'error');
+        return;
+      }
+      
+      // Show loading state
+      btnText.style.display = 'none';
+      btnSpinner.style.display = 'inline-block';
+      
+      try {
+        // Insert youth into Supabase
+        const { data, error } = await supabase
+          .from('youth')
+          .insert([
+            { 
+              name, 
+              age, 
+              gender, 
+              phone: phone || null, 
+              school: school || null, 
+              interests: interests || null
+            }
+          ]);
+          
+        if (error) throw error;
+        
+        showToast(`Youth member "${name}" added successfully`, 'success');
+        document.getElementById('youthForm').reset();
+        
+        // Reset button if it was in update mode
+        if (btnText.textContent === 'Update Youth Member') {
+          btnText.textContent = 'Add Youth Member';
+          document.getElementById('youthBtn').onclick = addYouth;
+        }
+        
+        // Reload youth
+        loadYouth();
+      } catch (error) {
+        showToast(`Error: ${error.message}`, 'error');
+      } finally {
+        // Reset button state
+        btnText.style.display = 'inline';
+        btnSpinner.style.display = 'none';
+      }
+    }
+
+    // Add elder
+    async function addElder() {
+      const name = document.getElementById('elderName').value.trim();
+      const position = document.getElementById('elderPosition').value.trim();
+      const phone = document.getElementById('elderPhone').value.trim();
+      const email = document.getElementById('elderEmail').value.trim();
+      const responsibilities = document.getElementById('elderResponsibilities').value.trim();
+      const bio = document.getElementById('elderBio').value.trim();
+      
+      const btnText = document.getElementById('elderBtnText');
+      const btnSpinner = document.getElementById('elderBtnSpinner');
+      
+      if (!name || !position) {
+        showToast('Please fill in all required fields', 'error');
+        return;
+      }
+      
+      // Show loading state
+      btnText.style.display = 'none';
+      btnSpinner.style.display = 'inline-block';
+      
+      try {
+        // Insert elder into Supabase
+        const { data, error } = await supabase
+          .from('elders')
+          .insert([
+            { 
+              name, 
+              position, 
+              phone: phone || null, 
+              email: email || null, 
+              responsibilities: responsibilities || null,
+              bio: bio || null
+            }
+          ]);
+          
+        if (error) throw error;
+        
+        showToast(`Elder "${name}" added successfully`, 'success');
+        document.getElementById('elderForm').reset();
+        
+        // Reset button if it was in update mode
+        if (btnText.textContent === 'Update Elder') {
+          btnText.textContent = 'Add Elder';
+          document.getElementById('elderBtn').onclick = addElder;
+        }
+        
+        // Reload elders
+        loadElders();
+      } catch (error) {
+        showToast(`Error: ${error.message}`, 'error');
+      } finally {
+        // Reset button state
+        btnText.style.display = 'inline';
+        btnSpinner.style.display = 'none';
+      }
+    }
+
+    // Add song
+    async function addSong() {
+      const title = document.getElementById('songTitle').value.trim();
+      const author = document.getElementById('songAuthor').value.trim();
+      const category = document.getElementById('songCategory').value;
+      const key = document.getElementById('songKey').value.trim();
+      const lyrics = document.getElementById('songLyrics').value.trim();
+      
+      const btnText = document.getElementById('songBtnText');
+      const btnSpinner = document.getElementById('songBtnSpinner');
+      
+      if (!title || !category || !lyrics) {
+        showToast('Please fill in all required fields', 'error');
+        return;
+      }
+      
+      // Show loading state
+      btnText.style.display = 'none';
+      btnSpinner.style.display = 'inline-block';
+      
+      try {
+        // Insert song into Supabase
+        const { data, error } = await supabase
+          .from('songs')
+          .insert([
+            { 
+              title, 
+              author: author || null, 
+              category, 
+              key: key || null,
+              lyrics
+            }
+          ]);
+          
+        if (error) throw error;
+        
+        showToast(`Song "${title}" added successfully`, 'success');
+        document.getElementById('songForm').reset();
+        
+        // Reset button if it was in update mode
+        if (btnText.textContent === 'Update Song') {
+          btnText.textContent = 'Add Song';
+          document.getElementById('songBtn').onclick = addSong;
+        }
+        
+        // Reload songs
+        loadSongs();
+      } catch (error) {
+        showToast(`Error: ${error.message}`, 'error');
+      } finally {
+        // Reset button state
+        btnText.style.display = 'inline';
+        btnSpinner.style.display = 'none';
+      }
+    }
+
+    // Modal functions
+    function closeModal() {
+      document.getElementById('viewModal').style.display = 'none';
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      const modal = document.getElementById('viewModal');
+      if (event.target === modal) {
+        closeModal();
+      }
+    }
+
+    // Check authentication on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      checkAuth();
+      loadDashboardData();
+    });
   </script>
 </body>
 </html>
