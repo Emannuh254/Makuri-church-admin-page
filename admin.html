@@ -99,14 +99,15 @@
 
     /* Navbar */
     header {
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(10px);
-      padding: 0.8rem 1rem; /* Reduced padding for mobile */
+      padding: 1rem;
       position: sticky;
       top: 0;
       z-index: 1000;
-      box-shadow: 0 4px 20px var(--shadow);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 2px 15px var(--shadow);
+      border-bottom: 1px solid var(--light-gray);
+
     }
 
     .navbar {
@@ -134,21 +135,23 @@
     .nav-links {
       display: flex;
       list-style: none;
-      gap: 6px; /* Reduced gap */
+      gap: 8px;
       flex-wrap: wrap;
     }
+  
+
 
     .nav-links a {
       color: var(--text-dark);
       text-decoration: none;
       font-weight: 500;
-      padding: 8px 12px; /* Reduced padding */
+      padding: 10px 16px;
       border-radius: var(--button-radius);
       transition: var(--transition);
       display: flex;
       align-items: center;
-      gap: 4px; /* Reduced gap */
-      font-size: 0.9rem; /* Smaller font */
+      gap: 6px;
+      position: relative;
     }
 
     .nav-links a:hover {
